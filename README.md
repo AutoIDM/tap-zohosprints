@@ -15,8 +15,11 @@ pipx install tap-zohosprints
 ## Configuration
 
 ### Accepted Config Options
-
-- [ ] `Developer TODO:` Provide a list of config options accepted by the tap.
+```
+client_id: (Required) 
+client_password: (Required)
+refresh_token: (Required)
+```
 
 A full list of supported settings and capabilities for this
 tap is available by running:
@@ -24,6 +27,29 @@ tap is available by running:
 ```bash
 tap-zohosprints --about
 ```
+### Setup Authentication
+We need to get a client ID and Secret to setup our tap
+1. Goto https://api-console.zoho.com/ to create an API Client
+1. Click Add Client
+1. Create a "Self Client"
+1. Keep the client id and client secret handy for setting up the tap/target
+1. Generate a scoped code
+    1. Click the Self client (in the api console)
+    1. Generate Code tab
+    1. Scope: ZohoSprints.teams.READ (Will get added to later)
+    1. Time Duration: 10 minutes or so
+    1. Create, save this code for the refresh token step below
+
+### How to generate a refresh token
+1. Use your favorite tool to do adhoc HTTP Requests (I'm going to use PostMan for these steps)
+1. Create a post request to the URL: https://accounts.zoho.com/oauth/v2/token
+1. In the Body of the request you will need these x-www-form-urlencoded values
+    1. code: (Generated from the Self Client)
+    1. client_id: (Generated from the Self Client steps)
+    1. client_secret: (Genereated from the Self Client steps)
+    1. redirect_uri: https://localhost.com (This value doesn't matter for our use case but the api requires it)
+    1. grant_type: authorization_code
+1. Copy the refresh_token that is generated for the tap
 
 ### Source Authentication and Authorization
 

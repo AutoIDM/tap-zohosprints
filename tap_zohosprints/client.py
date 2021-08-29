@@ -7,18 +7,27 @@ from typing import Any, Dict, Optional, Union, List, Iterable
 from memoization import cached
 
 from singer_sdk.helpers.jsonpath import extract_jsonpath
+from singer_sdk.authenticators import APIAuthenticatorBase, SimpleAuthenticator, OAuthAuthenticator, OAuthJWTAuthenticator
 from singer_sdk.streams import RESTStream
-
-from tap_zohosprints.auth import ZohoSprintsAuthenticator
-
 
 SCHEMAS_DIR = Path(__file__).parent / Path("./schemas")
 
+class ZohoSprintsAuthenticator(OAuthAuthenticator):
+
+    @property
+    def oauth_request_body(self) -> dict:
+        return {
+            'grant_type': 'refresh_token',
+            'redirect_uri': "http://localhost",#not needed for our use, but api requires it
+            'client_id': self.config["client_id"],
+            'client_secret': self.config["client_secret"],
+            'refresh_token': self.config["refresh_token"],
+        }
 
 class ZohoSprintsStream(RESTStream):
     """ZohoSprints stream class."""
 
-    url_base = "https://api.mysample.com"
+    url_base = "https://sprintsapi.zoho.com/zsapi"
 
     # OR use a dynamic url_base:
     # @property
@@ -26,14 +35,14 @@ class ZohoSprintsStream(RESTStream):
     #     """Return the API URL root, configurable via tap settings."""
     #     return self.config["api_url"]
 
-    records_jsonpath = "$[*]"  # Or override `parse_response`.
-    next_page_token_jsonpath = "$.next_page"  # Or override `get_next_page_token`.
+    records_jsonpath = "$"  # Or override `parse_response`.
+    next_page_token_jsonpath = "$.next_index"  # Or override `get_next_page_token`.
 
     @property
     @cached
     def authenticator(self) -> ZohoSprintsAuthenticator:
         """Return a new authenticator object."""
-        return ZohoSprintsAuthenticator.create_for_stream(self)
+        return ZohoSprintsAuthenticator(stream=self, auth_endpoint="https://accounts.zoho.com/oauth/v2/token")
 
     @property
     def http_headers(self) -> dict:
@@ -92,3 +101,4 @@ class ZohoSprintsStream(RESTStream):
         """As needed, append or transform raw data to match expected structure."""
         # TODO: Delete this method if not needed.
         return row
+

@@ -1,26 +1,26 @@
 version: 1
 send_anonymous_usage_stats: true
-project_id: tap-zohosprints
+project_id: e3e14778-c534-4325-9a0e-66f5b1338b4b
 plugins:
   extractors:
   - name: tap-zohosprints
     namespace: tap_zohosprints
-    # TODO: To test using Meltano, replace with absolute path
-    #       to the tap-zohosprints.sh script:
     executable: ./tap-zohosprints.sh
     capabilities:
     - state
     - catalog
     - discover
-    config:
-      start_date: '2010-01-01T00:00:00Z'
     settings:
-    # TODO: To configure using Meltano, declare settings and their types here:
-    - name: username
-    - name: password
+    - name: client_id 
+      kind: password
+    - name: client_secret
+      kind: password
+    - name: refresh_token
       kind: password
     - name: start_date
       value: '2010-01-01T00:00:00Z'
+    config:
+      start_date: '2010-01-01T00:00:00Z'
   loaders:
   - name: target-jsonl
     variant: andyh1203
