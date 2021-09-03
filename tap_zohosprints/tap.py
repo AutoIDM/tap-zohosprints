@@ -20,8 +20,9 @@ class TapZohoSprints(Tap):
     """ZohoSprints tap class."""
     name = "tap-zohosprints"
 
-    # TODO: Update this section with the actual config values you expect:
     config_jsonschema = th.PropertiesList(
+        th.Property("api_url", th.StringType, required=True), #Example https://sprintsapi.zoho.com/zsapi
+        th.Property("oauth_url", th.StringType, required=True), #Example https://accounts.zoho.com/oauth/v2/token
         th.Property("client_id", th.StringType, required=True),
         th.Property("client_secret", th.StringType, required=True),
         th.Property("refresh_token", th.StringType, required=True),

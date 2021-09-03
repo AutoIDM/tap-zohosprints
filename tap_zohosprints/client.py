@@ -27,13 +27,10 @@ class ZohoSprintsAuthenticator(OAuthAuthenticator):
 class ZohoSprintsStream(RESTStream):
     """ZohoSprints stream class."""
 
-    url_base = "https://sprintsapi.zoho.com/zsapi"
-
-    # OR use a dynamic url_base:
-    # @property
-    # def url_base(self) -> str:
-    #     """Return the API URL root, configurable via tap settings."""
-    #     return self.config["api_url"]
+    @property
+    def url_base(self) -> str:
+        """Return the API URL root, configurable via tap settings."""
+        return self.config["api_url"]
 
     records_jsonpath = "$"  # Or override `parse_response`.
     next_page_token_jsonpath = "$.next_index"  # Or override `get_next_page_token`.
@@ -42,7 +39,7 @@ class ZohoSprintsStream(RESTStream):
     @cached
     def authenticator(self) -> ZohoSprintsAuthenticator:
         """Return a new authenticator object."""
-        return ZohoSprintsAuthenticator(stream=self, auth_endpoint="https://accounts.zoho.com/oauth/v2/token")
+        return ZohoSprintsAuthenticator(stream=self, auth_endpoint=self.config["oauth_url"])
 
     @property
     def http_headers(self) -> dict:
