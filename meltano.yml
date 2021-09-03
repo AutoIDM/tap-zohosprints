@@ -11,6 +11,10 @@ plugins:
     - catalog
     - discover
     settings:
+    - name: api_url
+      kind: string
+    - name: oauth_url
+      kind: string
     - name: client_id 
       kind: password
     - name: client_secret
@@ -21,6 +25,8 @@ plugins:
       value: '2010-01-01T00:00:00Z'
     config:
       start_date: '2010-01-01T00:00:00Z'
+      api_url: "https://sprintsapi.zoho.com/zsapi"
+      oauth_url: "https://accounts.zoho.com/oauth/v2/token" 
   loaders:
   - name: target-jsonl
     variant: andyh1203

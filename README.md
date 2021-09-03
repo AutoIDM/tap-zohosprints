@@ -16,6 +16,8 @@ pipx install tap-zohosprints
 
 ### Accepted Config Options
 ```
+api_url: (Required) #Example (no trailing slash) https://sprintsapi.zoho.com/zsapi
+oauth_url: (Required) #Example (no tailing slash) https://accounts.zoho.com/oauth/v2/token
 client_id: (Required) 
 client_password: (Required)
 refresh_token: (Required)
