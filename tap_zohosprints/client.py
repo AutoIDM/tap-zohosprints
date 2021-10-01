@@ -2,27 +2,30 @@
 
 import requests
 from pathlib import Path
-from typing import Any, Dict, Optional, Union, List, Iterable
+from typing import Any, Dict, Optional, Iterable
 
 from memoization import cached
 
 from singer_sdk.helpers.jsonpath import extract_jsonpath
-from singer_sdk.authenticators import APIAuthenticatorBase, SimpleAuthenticator, OAuthAuthenticator, OAuthJWTAuthenticator
+from singer_sdk.authenticators import (
+    OAuthAuthenticator,
+)
 from singer_sdk.streams import RESTStream
 
 SCHEMAS_DIR = Path(__file__).parent / Path("./schemas")
 
-class ZohoSprintsAuthenticator(OAuthAuthenticator):
 
+class ZohoSprintsAuthenticator(OAuthAuthenticator):
     @property
     def oauth_request_body(self) -> dict:
         return {
-            'grant_type': 'refresh_token',
-            'redirect_uri': "http://localhost",#not needed for our use, but api requires it
-            'client_id': self.config["client_id"],
-            'client_secret': self.config["client_secret"],
-            'refresh_token': self.config["refresh_token"],
+            "grant_type": "refresh_token",
+            "redirect_uri": "http://localhost",  # not needed, but api requires it
+            "client_id": self.config["client_id"],
+            "client_secret": self.config["client_secret"],
+            "refresh_token": self.config["refresh_token"],
         }
+
 
 class ZohoSprintsStream(RESTStream):
     """ZohoSprints stream class."""
@@ -39,7 +42,9 @@ class ZohoSprintsStream(RESTStream):
     @cached
     def authenticator(self) -> ZohoSprintsAuthenticator:
         """Return a new authenticator object."""
-        return ZohoSprintsAuthenticator(stream=self, auth_endpoint=self.config["oauth_url"])
+        return ZohoSprintsAuthenticator(
+            stream=self, auth_endpoint=self.config["oauth_url"]
+        )
 
     @property
     def http_headers(self) -> dict:
@@ -53,9 +58,6 @@ class ZohoSprintsStream(RESTStream):
         self, response: requests.Response, previous_token: Optional[Any]
     ) -> Optional[Any]:
         """Return a token for identifying next page or None if no more pages."""
-        # TODO: If pagination is required, return a token which can be used to get the
-        #       next page. If this is the final page, return "None" to end the
-        #       pagination loop.
         if self.next_page_token_jsonpath:
             all_matches = extract_jsonpath(
                 self.next_page_token_jsonpath, response.json()
@@ -86,7 +88,6 @@ class ZohoSprintsStream(RESTStream):
 
         By default, no payload will be sent (return None).
         """
-        # TODO: Delete this method if no payload is required. (Most REST APIs.)
         return None
 
     def parse_response(self, response: requests.Response) -> Iterable[dict]:
@@ -98,4 +99,3 @@ class ZohoSprintsStream(RESTStream):
         """As needed, append or transform raw data to match expected structure."""
         # TODO: Delete this method if not needed.
         return row
-

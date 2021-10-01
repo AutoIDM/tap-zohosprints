@@ -9,6 +9,7 @@ from singer_sdk import typing as th  # JSON schema typing helpers
 from tap_zohosprints.streams import (
     TeamsStream,
 )
+
 # TODO: Compile a list of custom stream types here
 #       OR rewrite discover_streams() below with your custom logic.
 STREAM_TYPES = [
@@ -18,11 +19,16 @@ STREAM_TYPES = [
 
 class TapZohoSprints(Tap):
     """ZohoSprints tap class."""
+
     name = "tap-zohosprints"
 
     config_jsonschema = th.PropertiesList(
-        th.Property("api_url", th.StringType, required=True), #Example https://sprintsapi.zoho.com/zsapi
-        th.Property("oauth_url", th.StringType, required=True), #Example https://accounts.zoho.com/oauth/v2/token
+        th.Property(
+            "api_url", th.StringType, required=True
+        ),  # Example https://sprintsapi.zoho.com/zsapi
+        th.Property(
+            "oauth_url", th.StringType, required=True
+        ),  # Example https://accounts.zoho.com/oauth/v2/token
         th.Property("client_id", th.StringType, required=True),
         th.Property("client_secret", th.StringType, required=True),
         th.Property("refresh_token", th.StringType, required=True),
