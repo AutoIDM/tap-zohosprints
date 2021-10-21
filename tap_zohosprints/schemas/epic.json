@@ -1,0 +1,79 @@
+{
+    "type": "object",
+    "properties": {
+        "next": {
+            "type": "boolean"
+        },
+        "epicJObj": {
+            "type": "object",
+            "properties": {
+                "114398000000014019": {
+                    "type": "array",
+                    "items": {
+                        "type": [
+                            "integer",
+                            "string"
+                        ]
+                    }
+                }
+            }
+        },
+        "userDisplayName": {
+            "type": "object",
+            "properties": {
+                "114398000000002003": {
+                    "type": "string"
+                }
+            }
+        },
+        "epicIds": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        "epic_prop": {
+            "type": "object",
+            "properties": {
+                "owner": {
+                    "type": "integer"
+                },
+                "sequence": {
+                    "type": "integer"
+                },
+                "epicNo": {
+                    "type": "integer"
+                },
+                "epicName": {
+                    "type": "integer"
+                },
+                "createdBy": {
+                    "type": "integer"
+                },
+                "epicStatus": {
+                    "type": "integer"
+                },
+                "epicType": {
+                    "type": "integer"
+                },
+                "createdTime": {
+                    "type": "integer"
+                },
+                "colorCode": {
+                    "type": "integer"
+                }
+            }
+        },
+        "zsuserIdvsZUID": {
+            "type": "object",
+            "properties": {
+                "114398000000002003": {
+                    "type": "string"
+                }
+            }
+        },
+        "status": {
+            "type": "string"
+        }
+    }
+}

@@ -82,3 +82,18 @@ class ProjectsStream(ZohoSprintsStream):
     #Project Details should be useful, so decided to transform the data slightly
     #To align properties with their data elements. Left the raw object as well
     #Just in case this parsing isn't exactly what is wanted later on
+    def get_child_context(self, record: dict, context: Optional[dict]) -> dict:
+        """Return a context dictionary for child streams."""
+        return {
+            "team_id":context["team_id"],
+            "project_id":context["project_id"],
+        }
+
+class EpicsStream(ZohoSprintsStream):
+    """Epics"""
+    name = "epic"
+    path = "/team/{team_id}/projects/{project_id}/epic/?action=data&index=1&range=10"
+    parent_stream_type = ProjectsStream
+    primary_keys = ["$.projectIds[0]"]
+    replication_key = None
+    schema_filepath = SCHEMAS_DIR / "epic.json"
