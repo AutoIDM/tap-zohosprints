@@ -97,3 +97,12 @@ class EpicsStream(ZohoSprintsStream):
     primary_keys = ["$.projectIds[0]"]
     replication_key = None
     schema_filepath = SCHEMAS_DIR / "epic.json"
+
+class SprintsStream(ZohoSprintsStream):
+    """Sprints"""
+    name = "sprint"
+    path = "/team/{team_id}/projects/{project_id}/sprints/?action=data&index=1&range=10&type=[1,2,3,4]"
+    parent_stream_type = ProjectsStream
+    primary_keys = ["$.sprintIds[0]"]
+    replication_key = None
+    schema_filepath = SCHEMAS_DIR / "sprint.json"

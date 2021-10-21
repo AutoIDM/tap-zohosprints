@@ -1,0 +1,94 @@
+{
+    "type": "object",
+    "properties": {
+        "next": {
+            "type": "boolean"
+        },
+        "sprintIds": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        "sprint_prop": {
+            "type": "object",
+            "properties": {
+                "canceledOn": {
+                    "type": "integer"
+                },
+                "scrumMaster": {
+                    "type": "integer"
+                },
+                "endDate": {
+                    "type": "integer"
+                },
+                "canceledBy": {
+                    "type": "integer"
+                },
+                "duration": {
+                    "type": "integer"
+                },
+                "startAfter": {
+                    "type": "integer"
+                },
+                "createdBy": {
+                    "type": "integer"
+                },
+                "completedOn": {
+                    "type": "integer"
+                },
+                "sprintType": {
+                    "type": "integer"
+                },
+                "createdTime": {
+                    "type": "integer"
+                },
+                "sprintName": {
+                    "type": "integer"
+                },
+                "startDate": {
+                    "type": "integer"
+                },
+                "workflowId": {
+                    "type": "integer"
+                },
+                "sprintNo": {
+                    "type": "integer"
+                }
+            }
+        },
+        "userDisplayName": {
+            "type": "object",
+            "properties": {
+                "114398000000002003": {
+                    "type": "string"
+                }
+            }
+        },
+        "sprintJObj": {
+            "type": "object",
+            "properties": {
+                "114398000000014037": {
+                    "type": "array",
+                    "items": {
+                        "type": [
+                            "integer",
+                            "string"
+                        ]
+                    }
+                }
+            }
+        },
+        "zsuserIdvsZUID": {
+            "type": "object",
+            "properties": {
+                "114398000000002003": {
+                    "type": "string"
+                }
+            }
+        },
+        "status": {
+            "type": "string"
+        }
+    }
+}
