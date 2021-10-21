@@ -45,7 +45,7 @@ class MetaProjectsStream(ZohoSprintsStream):
     Tradeoff seemed reasonable for easier to understand code. 
     """
     name = "meta_project"
-    path = "/team/{team_id}/projects/"
+    path = "/team/{team_id}/projects/?action=allprojects&index=1&range=10"
     parent_stream_type = TeamsStream
     primary_keys = "project_id" 
     replication_key = None
@@ -53,6 +53,7 @@ class MetaProjectsStream(ZohoSprintsStream):
             th.Property("project_id", th.StringType),
             th.Property("team_id", th.StringType),
             ).to_dict()
+    #TODO Pagination
 
     def get_records(self, context: Optional[dict]) -> Iterable[Dict[str, Any]]:
         """Only need the project_ids list from the projects stream"
@@ -61,7 +62,7 @@ class MetaProjectsStream(ZohoSprintsStream):
             row = self.post_process(row, context)
             for project in row.get("projectIds"):
                 #team_id here is a leaky abstraction, seems like a decent tradeoff
-                data = {"project_id":project, "team_id":row.get("team_id")}
+                data = {"project_id":project, "team_id":context.get("team_id")}
                 yield data
 
     def get_child_context(self, record: dict, context: Optional[dict]) -> dict:
