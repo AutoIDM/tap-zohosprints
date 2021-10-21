@@ -35,6 +35,8 @@ class ZohoSprintsStream(RESTStream):
     records_jsonpath = "$"  # Or override `parse_response`.
     next_page_token_jsonpath = "$.next_index"  # Or override `get_next_page_token`.
 
+    _LOG_REQUEST_METRIC_URLS: bool = True
+
     @property
     @cached
     def authenticator(self) -> ZohoSprintsAuthenticator:

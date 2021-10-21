@@ -1,0 +1,54 @@
+{
+    "projectJObj": {
+        "114398000000013001": [
+            "Derek Visch 2nd Project",
+            1,
+            "ACTIVE",
+            "2",
+            "114398000000002003",
+            1,
+            "SCRUM",
+            "-1",
+            "-1",
+            "114398000000002003",
+            "2021-10-20T00:34:32.878Z",
+            0,
+            "FIBONACCI",
+            "0",
+            "114398000000003949",
+            "",
+            "114398000000013023"
+        ]
+    },
+    "project_prop": {
+        "owner": 4,
+        "integList": 13,
+        "endDate": 8,
+        "projName": 0,
+        "projType": 5,
+        "projNo": 3,
+        "groupId": 14,
+        "projType_enum": 6,
+        "description": 15,
+        "estimationType_enum": 12,
+        "status_enum": 2,
+        "createdBy": 9,
+        "estimationType": 11,
+        "createdTime": 10,
+        "startDate": 7,
+        "workflowId": 16,
+        "status": 1
+    },
+    "prefix": "DV2",
+    "userDisplayName": {
+        "114398000000002003": "Derek Visch"
+    },
+    "projectIds": [
+        "114398000000013001"
+    ],
+    "zsuserIdvsZUID": {
+        "114398000000002003": "732640395"
+    },
+    "isStrictScrum": false,
+    "status": "success"
+}
