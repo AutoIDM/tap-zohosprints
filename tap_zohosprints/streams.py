@@ -106,3 +106,20 @@ class SprintsStream(ZohoSprintsStream):
     primary_keys = ["$.sprintIds[0]"]
     replication_key = None
     schema_filepath = SCHEMAS_DIR / "sprint.json"
+
+class BacklogsStream(ZohoSprintsStream):
+    """Backlogs"""
+    name = "backlog"
+    path = "/team/{team_id}/projects/{project_id}/?action=getbacklog"
+    parent_stream_type = ProjectsStream
+    primary_keys = ["$.backlogId"]
+    replication_key = None
+    schema_filepath = SCHEMAS_DIR / "backlog.json"
+    
+    def get_child_context(self, record: dict, context: Optional[dict]) -> dict:
+        """Return a context dictionary for child streams."""
+        return {
+            "team_id":context["team_id"],
+            "project_id":context["project_id"],
+            "backlog_id":record["backlogId"],
+        }
