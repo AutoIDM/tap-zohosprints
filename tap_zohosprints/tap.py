@@ -12,6 +12,7 @@ from tap_zohosprints.streams import (
     ProjectsStream,
     EpicsStream,
     SprintsStream,
+    BacklogsStream,
 )
 # TODO: Compile a list of custom stream types here
 #       OR rewrite discover_streams() below with your custom logic.
@@ -21,6 +22,7 @@ STREAM_TYPES = [
     ProjectsStream,
     EpicsStream,
     SprintsStream,
+    BacklogsStream
 ]
 
 
