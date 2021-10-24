@@ -15,7 +15,7 @@ plugins:
       kind: string
     - name: oauth_url
       kind: string
-    - name: client_id 
+    - name: client_id
       kind: password
     - name: client_secret
       kind: password
@@ -25,9 +25,18 @@ plugins:
       value: '2010-01-01T00:00:00Z'
     config:
       start_date: '2010-01-01T00:00:00Z'
-      api_url: "https://sprintsapi.zoho.com/zsapi"
-      oauth_url: "https://accounts.zoho.com/oauth/v2/token" 
+      api_url: https://sprintsapi.zoho.com/zsapi
+      oauth_url: https://accounts.zoho.com/oauth/v2/token
+    select:
+    - epic.*
   loaders:
   - name: target-jsonl
     variant: andyh1203
     pip_url: target-jsonl
+  - name: target-postgres
+    variant: datamill-co
+    pip_url: singer-target-postgres
+    config:
+      postgres_host: 192.168.0.170
+      postgres_database: postgres
+      postgres_username: postgres

@@ -6,6 +6,9 @@ from typing import Any, Dict, Optional, Union, List, Iterable
 from singer_sdk import typing as th  # JSON Schema typing helpers
 
 from tap_zohosprints.client import ZohoSprintsStream
+from tap_zohosprints.client import ZohoSprintsPropsStream
+import copy
+import requests
 
 SCHEMAS_DIR = Path(__file__).parent / Path("./schemas")
 
@@ -90,14 +93,33 @@ class ProjectsStream(ZohoSprintsStream):
             "project_id":context["project_id"],
         }
 
-class EpicsStream(ZohoSprintsStream):
+class EpicsStream(ZohoSprintsPropsStream):
     """Epics"""
     name = "epic"
     path = "/team/{team_id}/projects/{project_id}/epic/?action=data&index=1&range=10"
     parent_stream_type = ProjectsStream
-    primary_keys = ["$.projectIds[0]"]
+    primary_keys = ["epic_id"]
     replication_key = None
     schema_filepath = SCHEMAS_DIR / "epic.json"
+    
+    def get_records(self, context: Optional[dict]) -> Iterable[Dict[str, Any]]:
+        """Return a generator of row-type dictionary objects.
+
+        Each row emitted should be a dictionary of property names to their values.
+        """
+        for row in self.request_records(context):
+            row = self.post_process(row, context)
+            yield row
+    
+    def parse_response(self, response: requests.Response) -> Iterable[dict]:
+        """Parse the response and return an iterator of result rows."""
+        #Create a record object
+        yield from self.property_unfurler(response=response,
+                prop_key="epic_prop",
+                ids_key="epicIds",
+                jobj_key="epicJObj",
+                primary_key_name="epic_id")
+
 
 class SprintsStream(ZohoSprintsStream):
     """Sprints"""
