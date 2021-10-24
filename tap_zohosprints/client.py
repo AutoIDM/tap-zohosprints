@@ -8,12 +8,12 @@ from typing import Any, Dict, Optional, Union, List, Iterable
 from memoization import cached
 
 from singer_sdk.helpers.jsonpath import extract_jsonpath
-from singer_sdk.authenticators import APIAuthenticatorBase, SimpleAuthenticator, OAuthAuthenticator, OAuthJWTAuthenticator
-from singer_sdk.streams import RESTStream
+from singer_sdk.authenticators import SingletonMeta, APIAuthenticatorBase, SimpleAuthenticator, OAuthAuthenticator, OAuthJWTAuthenticator
+from singer_sdk.streams import RESTStream 
 
 SCHEMAS_DIR = Path(__file__).parent / Path("./schemas")
 
-class ZohoSprintsAuthenticator(OAuthAuthenticator):
+class ZohoSprintsAuthenticator(OAuthAuthenticator, metaclass=SingletonMeta):
 
     @property
     def oauth_request_body(self) -> dict:
@@ -109,23 +109,6 @@ class ZohoSprintsPropsStream(ZohoSprintsStream):
 
         #Raise if not implemented
         raise(NotImplementedError)
-        #Create a record object
-        #json = response.json()
-        #epic_props: Dict = json.get("epic_prop")
-        #epic_ids: List = json.get("epicIds")
-        #for epic_id in epic_ids:
-            #record = {}
-            #epic_prop_values: List = json["epicJObj"][epic_id]
-            #for property_name, property_index in epic_props.items():
-                #record[property_name] = epic_prop_values[property_index]
-            #return_object: Dict = copy.deepcopy(json)
-            #return_object["epic_id"] = epic_id
-            #return_object.pop("epic_prop")
-            #return_object.pop("epicIds")
-            #return_object.pop("epicJObj")
-            #return_object["record"] = record
-            #self.logger.info(return_object)
-            #yield return_object
 
     #Should add a few tests here
     def property_unfurler(self, 
