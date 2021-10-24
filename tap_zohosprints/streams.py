@@ -58,6 +58,7 @@ class MetaProjectsStream(ZohoSprintsStream):
     def get_records(self, context: Optional[dict]) -> Iterable[Dict[str, Any]]:
         """Only need the project_ids list from the projects stream"
         """
+        #TODO should be able to do this with jsonpath
         for row in self.request_records(context):
             row = self.post_process(row, context)
             for project in row.get("projectIds"):
@@ -123,3 +124,14 @@ class BacklogsStream(ZohoSprintsStream):
             "project_id":context["project_id"],
             "backlog_id":record["backlogId"],
         }
+
+class BacklogItemsStream(ZohoSprintsStream):
+    """Items"""
+    name = "items_backlog"
+    path = "/team/{team_id}/projects/{project_id}/sprints/{backlog_id}/item/?action=sprintitems&index=1&range=10&subitem=true"
+    parent_stream_type = BacklogsStream
+    primary_keys = ["$.itemIds[0]"]
+    replication_key = None
+    schema_filepath = SCHEMAS_DIR / "item.json"
+
+#TODO need to get Items Individually due to Custom Fields

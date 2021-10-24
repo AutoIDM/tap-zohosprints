@@ -1,0 +1,214 @@
+{
+    "type": "object",
+    "properties": {
+        "next": {
+            "type": "boolean"
+        },
+        "item_prop": {
+            "type": "object",
+            "properties": {
+                "endDate": {
+                    "type": "integer"
+                },
+                "releaseCount": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "integer"
+                },
+                "isNotesAdded": {
+                    "type": "integer"
+                },
+                "itemNo": {
+                    "type": "integer"
+                },
+                "ownerId": {
+                    "type": "integer"
+                },
+                "addedVia": {
+                    "type": "integer"
+                },
+                "hasCheckList": {
+                    "type": "integer"
+                },
+                "leftPosition": {
+                    "type": "integer"
+                },
+                "points": {
+                    "type": "integer"
+                },
+                "duration": {
+                    "type": "integer"
+                },
+                "itemEpicSeq": {
+                    "type": "integer"
+                },
+                "itemName": {
+                    "type": "integer"
+                },
+                "startAfter": {
+                    "type": "integer"
+                },
+                "createdTime": {
+                    "type": "integer"
+                },
+                "isIntegrated": {
+                    "type": "integer"
+                },
+                "rightPosition": {
+                    "type": "integer"
+                },
+                "rootItem": {
+                    "type": "integer"
+                },
+                "isDocsAdded": {
+                    "type": "integer"
+                },
+                "projPriorityId": {
+                    "type": "integer"
+                },
+                "isParent": {
+                    "type": "integer"
+                },
+                "completedDate": {
+                    "type": "integer"
+                },
+                "sequence": {
+                    "type": "integer"
+                },
+                "sprintId": {
+                    "type": "integer"
+                },
+                "depth": {
+                    "type": "integer"
+                },
+                "itemStatusSeq": {
+                    "type": "integer"
+                },
+                "statusId": {
+                    "type": "integer"
+                },
+                "epicId": {
+                    "type": "integer"
+                },
+                "createdBy": {
+                    "type": "integer"
+                },
+                "parentItem": {
+                    "type": "integer"
+                },
+                "tagCount": {
+                    "type": "integer"
+                },
+                "projItemTypeId": {
+                    "type": "integer"
+                },
+                "startDate": {
+                    "type": "integer"
+                },
+                "completedBy": {
+                    "type": "integer"
+                }
+            }
+        },
+        "itemIds": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        "userDisplayName": {
+            "type": "object",
+            "properties": {
+                "114398000000002005": {
+                    "type": "string"
+                },
+                "114398000000002003": {
+                    "type": "string"
+                }
+            }
+        },
+        "itemJObj": {
+            "type": "object",
+            "properties": {
+                "114398000000014025": {
+                    "type": "array",
+                    "items": {
+                        "anyOf": [
+                            {
+                                "type": [
+                                    "boolean",
+                                    "integer",
+                                    "string"
+                                ]
+                            },
+                            {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        "integObj": {
+            "type": "object",
+            "properties": {
+                "114398000000014025": {
+                    "type": "object",
+                    "properties": {
+                        "GOOGLE_EVENT": {
+                            "type": "boolean"
+                        },
+                        "ZOHO_PROJECTS_TASK": {
+                            "type": "boolean"
+                        },
+                        "AZURE": {
+                            "type": "boolean"
+                        },
+                        "ZOHO_PROJECTS_BUG": {
+                            "type": "boolean"
+                        },
+                        "BITBUCKET": {
+                            "type": "boolean"
+                        },
+                        "OUTLOOK_TASK": {
+                            "type": "boolean"
+                        },
+                        "GITHUB": {
+                            "type": "boolean"
+                        },
+                        "GOOGLE_TASK": {
+                            "type": "boolean"
+                        },
+                        "OUTLOOK_EVENT": {
+                            "type": "boolean"
+                        },
+                        "ZOHO_DESK": {
+                            "type": "boolean"
+                        },
+                        "GITLAB": {
+                            "type": "boolean"
+                        }
+                    }
+                }
+            }
+        },
+        "zsuserIdvsZUID": {
+            "type": "object",
+            "properties": {
+                "114398000000002005": {
+                    "type": "string"
+                },
+                "114398000000002003": {
+                    "type": "string"
+                }
+            }
+        },
+        "status": {
+            "type": "string"
+        }
+    }
+}

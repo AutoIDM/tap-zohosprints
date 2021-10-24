@@ -1,5 +1,4 @@
 """ZohoSprints tap class."""
-
 from typing import List
 
 from singer_sdk import Tap, Stream
@@ -13,6 +12,7 @@ from tap_zohosprints.streams import (
     EpicsStream,
     SprintsStream,
     BacklogsStream,
+    BacklogItemsStream,
 )
 # TODO: Compile a list of custom stream types here
 #       OR rewrite discover_streams() below with your custom logic.
@@ -22,7 +22,8 @@ STREAM_TYPES = [
     ProjectsStream,
     EpicsStream,
     SprintsStream,
-    BacklogsStream
+    BacklogsStream,
+    BacklogItemsStream,
 ]
 
 
