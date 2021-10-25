@@ -72,7 +72,11 @@ tap-zohosprints --config CONFIG --discover > ./catalog.json
 
 ## Developer Resources
 
-- [ ] `Developer TODO:` As a first step, scan the entire project for the text "`TODO:`" and complete any recommended steps, deleting the "TODO" references once completed.
+### Property / JObj Nesting
+ZohoSprints api maps items to an object called Jobj, and `{name}_prop`. Example here https://sprints.zoho.com/apidoc.html#Getitems. To help out with down stream parsing we decided to make a mapper that makes a `record` object for streams that use the JObj idea. 
+
+For streams with JObj's used in the API, the objects are replaced with a `record` object. 
+For more detailed information check out the `property_unfurler()` function in `client.py`
 
 ### Initialize your Development Environment
 
