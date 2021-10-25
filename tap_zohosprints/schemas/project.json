@@ -1,20 +1,6 @@
 {
     "type": "object",
     "properties": {
-        "projectJObj": {
-            "type": "object",
-            "properties": {
-                "114398000000013001": {
-                    "type": "array",
-                    "items": {
-                        "type": [
-                            "integer",
-                            "string"
-                        ]
-                    }
-                }
-            }
-        },
         "project_prop": {
             "type": "object",
             "properties": {
@@ -76,11 +62,10 @@
         },
         "userDisplayName": {
             "type": "object",
-            "properties": {
-                "114398000000002003": {
-                    "type": "string"
-                }
-            }
+            "properties": {}
+        },
+        "project_id": {
+                "type":"string"
         },
         "projectIds": {
             "type": "array",
@@ -90,9 +75,61 @@
         },
         "zsuserIdvsZUID": {
             "type": "object",
+            "properties": {}
+        },
+        "record": {
+            "type": "object",
             "properties": {
-                "114398000000002003": {
+                "owner": {
                     "type": "string"
+                },
+                "integList": {
+                    "type": "string"
+                },
+                "endDate": {
+                    "type": "string"
+                },
+                "projName": {
+                    "type": "string"
+                },
+                "projType": {
+                    "type": "integer"
+                },
+                "projNo": {
+                    "type": "string"
+                },
+                "groupId": {
+                    "type": "string"
+                },
+                "projType_enum": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "estimationType_enum": {
+                    "type": "string"
+                },
+                "status_enum": {
+                    "type": "string"
+                },
+                "createdBy": {
+                    "type": "string"
+                },
+                "estimationType": {
+                    "type": "integer"
+                },
+                "createdTime": {
+                    "type": "string"
+                },
+                "startDate": {
+                    "type": "string"
+                },
+                "workflowId": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
                 }
             }
         },

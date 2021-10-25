@@ -27,16 +27,16 @@ plugins:
       start_date: '2010-01-01T00:00:00Z'
       api_url: https://sprintsapi.zoho.com/zsapi
       oauth_url: https://accounts.zoho.com/oauth/v2/token
-    select:
-    - epic.*
   loaders:
   - name: target-jsonl
     variant: andyh1203
     pip_url: target-jsonl
   - name: target-postgres
-    variant: datamill-co
-    pip_url: singer-target-postgres
+    variant: transferwise
+    pip_url: pipelinewise-target-postgres
     config:
-      postgres_host: 192.168.0.170
-      postgres_database: postgres
-      postgres_username: postgres
+      host: 192.168.0.170
+      user: postgres
+      dbname: postgres
+      primary_key_required: false
+      data_flattening_max_level: 10

@@ -6,19 +6,11 @@
         },
         "userDisplayName": {
             "type": "object",
-            "properties": {
-                "114398000000002003": {
-                    "type": "string"
-                }
-            }
+            "properties": {}
         },
         "zsuserIdvsZUID": {
             "type": "object",
-            "properties": {
-                "114398000000002003": {
-                    "type": "string"
-                }
-            }
+            "properties": {}
         },
         "status": {
             "type": "string"
@@ -27,7 +19,7 @@
             "type": "string"
         },
         "record":{
-            "type": ["null", "object"],
+            "type": ["object"],
             "properties":{
                 "owner": {
                     "type": "string"
