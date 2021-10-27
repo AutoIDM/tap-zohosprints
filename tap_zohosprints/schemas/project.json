@@ -1,62 +1,6 @@
 {
     "type": "object",
     "properties": {
-        "project_prop": {
-            "type": "object",
-            "properties": {
-                "owner": {
-                    "type": "integer"
-                },
-                "integList": {
-                    "type": "integer"
-                },
-                "endDate": {
-                    "type": "integer"
-                },
-                "projName": {
-                    "type": "integer"
-                },
-                "projType": {
-                    "type": "integer"
-                },
-                "projNo": {
-                    "type": "integer"
-                },
-                "groupId": {
-                    "type": "integer"
-                },
-                "projType_enum": {
-                    "type": "integer"
-                },
-                "description": {
-                    "type": "integer"
-                },
-                "estimationType_enum": {
-                    "type": "integer"
-                },
-                "status_enum": {
-                    "type": "integer"
-                },
-                "createdBy": {
-                    "type": "integer"
-                },
-                "estimationType": {
-                    "type": "integer"
-                },
-                "createdTime": {
-                    "type": "integer"
-                },
-                "startDate": {
-                    "type": "integer"
-                },
-                "workflowId": {
-                    "type": "integer"
-                },
-                "status": {
-                    "type": "integer"
-                }
-            }
-        },
         "prefix": {
             "type": "string"
         },
