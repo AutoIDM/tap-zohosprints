@@ -39,4 +39,4 @@ plugins:
       user: postgres
       dbname: postgres
       primary_key_required: false
-      data_flattening_max_level: 10
+      data_flattening_max_level: 10 

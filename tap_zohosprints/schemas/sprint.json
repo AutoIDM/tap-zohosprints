@@ -13,53 +13,6 @@
                 "type": "string"
             }
         },
-        "sprint_prop": {
-            "type": "object",
-            "properties": {
-                "canceledOn": {
-                    "type": "integer"
-                },
-                "scrumMaster": {
-                    "type": "integer"
-                },
-                "endDate": {
-                    "type": "integer"
-                },
-                "canceledBy": {
-                    "type": "integer"
-                },
-                "duration": {
-                    "type": "integer"
-                },
-                "startAfter": {
-                    "type": "integer"
-                },
-                "createdBy": {
-                    "type": "integer"
-                },
-                "completedOn": {
-                    "type": "integer"
-                },
-                "sprintType": {
-                    "type": "integer"
-                },
-                "createdTime": {
-                    "type": "integer"
-                },
-                "sprintName": {
-                    "type": "integer"
-                },
-                "startDate": {
-                    "type": "integer"
-                },
-                "workflowId": {
-                    "type": "integer"
-                },
-                "sprintNo": {
-                    "type": "integer"
-                }
-            }
-        },
         "userDisplayName": {
             "type": "object",
             "properties": {}

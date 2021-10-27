@@ -171,4 +171,31 @@ class BacklogItemsStream(ZohoSprintsPropsStream):
                 jobj_key="itemJObj",
                 primary_key_name="item_id")
 
+    def get_child_context(self, record: dict, context: Optional[dict]) -> dict:
+        """Return a context dictionary for child streams."""
+        return {
+            "team_id":context["team_id"],
+            "project_id":context["project_id"],
+            "backlog_id":context["backlog_id"],
+            "item_id":record["item_id"],
+        }
+
+class BacklogItemDetailsStream(ZohoSprintsPropsStream):
+    """Items"""
+    #TODO change this name
+    name = "item_details_backlog"
+    path = "/team/{team_id}/projects/{project_id}/sprints/{backlog_id}/item/{item_id}/?action=details"
+    parent_stream_type = BacklogItemsStream 
+    primary_keys = ["item_id"]
+    replication_key = None
+    schema_filepath = SCHEMAS_DIR / "item.json"
+    
+    def parse_response(self, response: requests.Response) -> Iterable[dict]:
+        """Parse the response and return an iterator of result rows."""
+        #Create a record object
+        yield from self.property_unfurler(response=response,
+                prop_key="item_prop",
+                ids_key="itemIds",
+                jobj_key="itemJObj",
+                primary_key_name="item_id")
 #TODO need to get Items Individually due to Custom Fields
