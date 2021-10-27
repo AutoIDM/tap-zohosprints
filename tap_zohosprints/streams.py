@@ -38,7 +38,7 @@ class TeamsStream(ZohoSprintsStream):
     def get_child_context(self, record: dict, context: Optional[dict]) -> dict:
         """Return a context dictionary for child streams."""
         return {
-            "team_id":record["myTeamId"]
+            "team_id":record["portals"][0]["zsoid"]
         }
 
 class MetaProjectsStream(ZohoSprintsPropsStream):
