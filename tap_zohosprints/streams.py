@@ -6,6 +6,9 @@ from typing import Any, Dict, Optional, Union, List, Iterable
 from singer_sdk import typing as th  # JSON Schema typing helpers
 
 from tap_zohosprints.client import ZohoSprintsStream
+from tap_zohosprints.client import ZohoSprintsPropsStream
+import copy
+import requests
 
 SCHEMAS_DIR = Path(__file__).parent / Path("./schemas")
 
@@ -13,7 +16,7 @@ class TeamsStream(ZohoSprintsStream):
     """Define custom stream."""
     name = "team"
     path = "/teams/"
-    #primary_keys = ["id"]
+    primary_keys = ["ownerTeamIds"]
     replication_key = None
     # Optionally, you may also use `schema_filepath` in place of `schema`:
     # schema_filepath = SCHEMAS_DIR / "users.json"
@@ -38,7 +41,7 @@ class TeamsStream(ZohoSprintsStream):
             "team_id":record["myTeamId"]
         }
 
-class MetaProjectsStream(ZohoSprintsStream):
+class MetaProjectsStream(ZohoSprintsPropsStream):
     """Went with this approach as Items sometimes had extra data in
     the project details page. Meta in this case really means useless data. 
 
@@ -47,37 +50,43 @@ class MetaProjectsStream(ZohoSprintsStream):
     name = "meta_project"
     path = "/team/{team_id}/projects/?action=allprojects&index=1&range=10"
     parent_stream_type = TeamsStream
-    primary_keys = "project_id" 
+    primary_keys = ["project_id"]
     replication_key = None
     schema = th.PropertiesList(
             th.Property("project_id", th.StringType),
             th.Property("team_id", th.StringType),
             ).to_dict()
     #TODO Pagination
-
-    def get_records(self, context: Optional[dict]) -> Iterable[Dict[str, Any]]:
-        """Only need the project_ids list from the projects stream"
-        """
-        #TODO should be able to do this with jsonpath
-        for row in self.request_records(context):
-            row = self.post_process(row, context)
-            for project in row.get("projectIds"):
-                #team_id here is a leaky abstraction, seems like a decent tradeoff
-                data = {"project_id":project, "team_id":context.get("team_id")}
-                yield data
+    def parse_response(self, response: requests.Response) -> Iterable[dict]:
+        """Parse the response and return an iterator of result rows."""
+        #Create a record object
+        yield from self.property_unfurler(response=response,
+                prop_key="project_prop",
+                ids_key="projectIds",
+                jobj_key="projectJObj",
+                primary_key_name="project_id")
 
     def get_child_context(self, record: dict, context: Optional[dict]) -> dict:
         """Return a context dictionary for child streams."""
-        return record
+        return {"project_id":record["project_id"], "team_id":context["team_id"]}
 
-class ProjectsStream(ZohoSprintsStream):
+class ProjectsStream(ZohoSprintsPropsStream):
     """ProjectStream"""
     name = "project"
     path = "/team/{team_id}/projects/{project_id}/?action=details"
     parent_stream_type =MetaProjectsStream
-    primary_keys = ["$.projectIds[0]"]
+    primary_keys = ["project_id"]
     replication_key = None
     schema_filepath = SCHEMAS_DIR / "project.json"
+    
+    def parse_response(self, response: requests.Response) -> Iterable[dict]:
+        """Parse the response and return an iterator of result rows."""
+        #Create a record object
+        yield from self.property_unfurler(response=response,
+                prop_key="project_prop",
+                ids_key="projectIds",
+                jobj_key="projectJObj",
+                primary_key_name="project_id")
 
     #TODO get_records needs to make the Project Details object useful
     #Project Details should be useful, so decided to transform the data slightly
@@ -87,33 +96,52 @@ class ProjectsStream(ZohoSprintsStream):
         """Return a context dictionary for child streams."""
         return {
             "team_id":context["team_id"],
-            "project_id":context["project_id"],
+            "project_id":record["project_id"],
         }
 
-class EpicsStream(ZohoSprintsStream):
+class EpicsStream(ZohoSprintsPropsStream):
     """Epics"""
     name = "epic"
     path = "/team/{team_id}/projects/{project_id}/epic/?action=data&index=1&range=10"
     parent_stream_type = ProjectsStream
-    primary_keys = ["$.projectIds[0]"]
+    primary_keys = ["epic_id"]
     replication_key = None
     schema_filepath = SCHEMAS_DIR / "epic.json"
+    
+    def parse_response(self, response: requests.Response) -> Iterable[dict]:
+        """Parse the response and return an iterator of result rows."""
+        #Create a record object
+        yield from self.property_unfurler(response=response,
+                prop_key="epic_prop",
+                ids_key="epicIds",
+                jobj_key="epicJObj",
+                primary_key_name="epic_id")
 
-class SprintsStream(ZohoSprintsStream):
+
+class SprintsStream(ZohoSprintsPropsStream):
     """Sprints"""
     name = "sprint"
     path = "/team/{team_id}/projects/{project_id}/sprints/?action=data&index=1&range=10&type=[1,2,3,4]"
     parent_stream_type = ProjectsStream
-    primary_keys = ["$.sprintIds[0]"]
+    primary_keys = ["sprint_id"]
     replication_key = None
     schema_filepath = SCHEMAS_DIR / "sprint.json"
+    
+    def parse_response(self, response: requests.Response) -> Iterable[dict]:
+        """Parse the response and return an iterator of result rows."""
+        #Create a record object
+        yield from self.property_unfurler(response=response,
+                prop_key="sprint_prop",
+                ids_key="sprintIds",
+                jobj_key="sprintJObj",
+                primary_key_name="sprint_id")
 
 class BacklogsStream(ZohoSprintsStream):
     """Backlogs"""
     name = "backlog"
     path = "/team/{team_id}/projects/{project_id}/?action=getbacklog"
     parent_stream_type = ProjectsStream
-    primary_keys = ["$.backlogId"]
+    primary_keys = ["backlogId"]
     replication_key = None
     schema_filepath = SCHEMAS_DIR / "backlog.json"
     
@@ -125,13 +153,22 @@ class BacklogsStream(ZohoSprintsStream):
             "backlog_id":record["backlogId"],
         }
 
-class BacklogItemsStream(ZohoSprintsStream):
+class BacklogItemsStream(ZohoSprintsPropsStream):
     """Items"""
     name = "items_backlog"
     path = "/team/{team_id}/projects/{project_id}/sprints/{backlog_id}/item/?action=sprintitems&index=1&range=10&subitem=true"
     parent_stream_type = BacklogsStream
-    primary_keys = ["$.itemIds[0]"]
+    primary_keys = ["item_id"]
     replication_key = None
     schema_filepath = SCHEMAS_DIR / "item.json"
+    
+    def parse_response(self, response: requests.Response) -> Iterable[dict]:
+        """Parse the response and return an iterator of result rows."""
+        #Create a record object
+        yield from self.property_unfurler(response=response,
+                prop_key="item_prop",
+                ids_key="itemIds",
+                jobj_key="itemJObj",
+                primary_key_name="item_id")
 
 #TODO need to get Items Individually due to Custom Fields

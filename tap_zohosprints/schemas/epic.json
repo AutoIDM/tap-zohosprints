@@ -4,51 +4,37 @@
         "next": {
             "type": "boolean"
         },
-        "epicJObj": {
-            "type": "object",
-            "properties": {
-                "114398000000014019": {
-                    "type": "array",
-                    "items": {
-                        "type": [
-                            "integer",
-                            "string"
-                        ]
-                    }
-                }
-            }
-        },
         "userDisplayName": {
             "type": "object",
-            "properties": {
-                "114398000000002003": {
-                    "type": "string"
-                }
-            }
+            "properties": {}
         },
-        "epicIds": {
-            "type": "array",
-            "items": {
-                "type": "string"
-            }
-        },
-        "epic_prop": {
+        "zsuserIdvsZUID": {
             "type": "object",
-            "properties": {
+            "properties": {}
+        },
+        "status": {
+            "type": "string"
+        },
+        "epic_id": {
+            "type": "string"
+        },
+        "record":{
+            "type": ["object"],
+            "properties":{
                 "owner": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "sequence": {
                     "type": "integer"
                 },
                 "epicNo": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "epicName": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "createdBy": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "epicStatus": {
                     "type": "integer"
@@ -57,23 +43,15 @@
                     "type": "integer"
                 },
                 "createdTime": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "colorCode": {
-                    "type": "integer"
-                }
-            }
-        },
-        "zsuserIdvsZUID": {
-            "type": "object",
-            "properties": {
-                "114398000000002003": {
+                    "type": "string"
+                },
+                "epic_id": {
                     "type": "string"
                 }
             }
-        },
-        "status": {
-            "type": "string"
         }
     }
 }

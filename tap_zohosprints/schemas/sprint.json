@@ -1,6 +1,9 @@
 {
     "type": "object",
     "properties": {
+        "sprint_id":{
+                "type": "string"
+        },
         "next": {
             "type": "boolean"
         },
@@ -59,36 +62,61 @@
         },
         "userDisplayName": {
             "type": "object",
-            "properties": {
-                "114398000000002003": {
-                    "type": "string"
-                }
-            }
-        },
-        "sprintJObj": {
-            "type": "object",
-            "properties": {
-                "114398000000014037": {
-                    "type": "array",
-                    "items": {
-                        "type": [
-                            "integer",
-                            "string"
-                        ]
-                    }
-                }
-            }
+            "properties": {}
         },
         "zsuserIdvsZUID": {
             "type": "object",
-            "properties": {
-                "114398000000002003": {
-                    "type": "string"
-                }
-            }
+            "properties": {}
         },
         "status": {
             "type": "string"
+        },
+        "record": {
+            "type": "object",
+            "properties": {
+                "canceledOn": {
+                    "type": "string"
+                },
+                "scrumMaster": {
+                    "type": "string"
+                },
+                "endDate": {
+                    "type": "string"
+                },
+                "canceledBy": {
+                    "type": "string"
+                },
+                "duration": {
+                    "type": "string"
+                },
+                "startAfter": {
+                    "type": "string"
+                },
+                "createdBy": {
+                    "type": "string"
+                },
+                "completedOn": {
+                    "type": "string"
+                },
+                "sprintType": {
+                    "type": "integer"
+                },
+                "createdTime": {
+                    "type": "string"
+                },
+                "sprintName": {
+                    "type": "string"
+                },
+                "startDate": {
+                    "type": "string"
+                },
+                "workflowId": {
+                    "type": "string"
+                },
+                "sprintNo": {
+                    "type": "string"
+                }
+            }
         }
     }
 }

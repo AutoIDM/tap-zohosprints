@@ -1,5 +1,6 @@
 """REST client handling, including ZohoSprintsStream base class."""
 
+import copy
 import requests
 from pathlib import Path
 from typing import Any, Dict, Optional, Union, List, Iterable
@@ -7,12 +8,12 @@ from typing import Any, Dict, Optional, Union, List, Iterable
 from memoization import cached
 
 from singer_sdk.helpers.jsonpath import extract_jsonpath
-from singer_sdk.authenticators import APIAuthenticatorBase, SimpleAuthenticator, OAuthAuthenticator, OAuthJWTAuthenticator
-from singer_sdk.streams import RESTStream
+from singer_sdk.authenticators import SingletonMeta, APIAuthenticatorBase, SimpleAuthenticator, OAuthAuthenticator, OAuthJWTAuthenticator
+from singer_sdk.streams import RESTStream 
 
 SCHEMAS_DIR = Path(__file__).parent / Path("./schemas")
 
-class ZohoSprintsAuthenticator(OAuthAuthenticator):
+class ZohoSprintsAuthenticator(OAuthAuthenticator, metaclass=SingletonMeta):
 
     @property
     def oauth_request_body(self) -> dict:
@@ -101,3 +102,64 @@ class ZohoSprintsStream(RESTStream):
         # TODO: Delete this method if not needed.
         return row
 
+class ZohoSprintsPropsStream(ZohoSprintsStream):
+    
+    def parse_response(self, response: requests.Response) -> Iterable[dict]:
+        """Parse the response and return an iterator of result rows."""
+
+        #Raise if not implemented
+        raise(NotImplementedError)
+
+    #Should add a few tests here
+    def property_unfurler(self, 
+            response: requests.Response,
+            prop_key: str,
+            ids_key: str,
+            jobj_key: str,
+            primary_key_name: str,
+            ) -> Iterable[dict]:
+        """
+        Zohosprints embeds data inside of a JObj key.
+        
+        Example of a response like this is https://sprints.zoho.com/apidoc.html#Getallepics
+        epic_prop has the properties
+        epicJObj has all the data
+
+        While one option would be to leave data in this format, we decided not 
+        to because: 
+        1) Matching the _prop and JObj properties has to happen somewhere 
+        downstream, doing this mapping in your downstream system is painful and requires more 
+        knowledge then you'd like to have to have about the source data.
+
+        2)we have to run discovery to populate the proper schemas 
+        when there's custom fields that can be added to epic_prop (Scenario is
+        most likely for Items not Epics), this means we have to parse through
+        this data anyways, so why not also populate a record object that's
+        much easier for us humans to use!
+
+        Embded this data under a "record" object because there could be (and is)
+        overlap of keys in this object and the "root" object.  
+
+        Maybe this is the wrong decision? Post an issue, and let us know your 
+        thoughts!
+
+        Parse the response and return an iterator of result rows.
+        """
+        #Create a record object
+        json = response.json()
+        props: Dict = json.get(prop_key)
+        ids: List = json.get(ids_key)
+        for id in ids:
+            record = {}
+            prop_values: List = json[jobj_key][id]
+            for property_name, property_index in props.items():
+                record[property_name] = prop_values[property_index]
+            return_object: Dict = copy.deepcopy(json)
+            return_object[primary_key_name] = id
+            return_object.pop(prop_key)
+            return_object.pop(ids_key)
+            return_object.pop(jobj_key)
+            return_object["record"] = record
+            yield return_object
+
+        return {}

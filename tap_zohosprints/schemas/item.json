@@ -1,6 +1,9 @@
 {
     "type": "object",
     "properties": {
+        "item_id":{
+                "type": "string"
+        },
         "next": {
             "type": "boolean"
         },
@@ -119,96 +122,27 @@
         },
         "userDisplayName": {
             "type": "object",
-            "properties": {
-                "114398000000002005": {
-                    "type": "string"
-                },
-                "114398000000002003": {
-                    "type": "string"
-                }
-            }
-        },
-        "itemJObj": {
-            "type": "object",
-            "properties": {
-                "114398000000014025": {
-                    "type": "array",
-                    "items": {
-                        "anyOf": [
-                            {
-                                "type": [
-                                    "boolean",
-                                    "integer",
-                                    "string"
-                                ]
-                            },
-                            {
-                                "type": "array",
-                                "items": {
-                                    "type": "string"
-                                }
-                            }
-                        ]
-                    }
-                }
-            }
+            "properties": {}
         },
         "integObj": {
             "type": "object",
-            "properties": {
-                "114398000000014025": {
-                    "type": "object",
-                    "properties": {
-                        "GOOGLE_EVENT": {
-                            "type": "boolean"
-                        },
-                        "ZOHO_PROJECTS_TASK": {
-                            "type": "boolean"
-                        },
-                        "AZURE": {
-                            "type": "boolean"
-                        },
-                        "ZOHO_PROJECTS_BUG": {
-                            "type": "boolean"
-                        },
-                        "BITBUCKET": {
-                            "type": "boolean"
-                        },
-                        "OUTLOOK_TASK": {
-                            "type": "boolean"
-                        },
-                        "GITHUB": {
-                            "type": "boolean"
-                        },
-                        "GOOGLE_TASK": {
-                            "type": "boolean"
-                        },
-                        "OUTLOOK_EVENT": {
-                            "type": "boolean"
-                        },
-                        "ZOHO_DESK": {
-                            "type": "boolean"
-                        },
-                        "GITLAB": {
-                            "type": "boolean"
-                        }
-                    }
-                }
-            }
+            "properties": {}
         },
         "zsuserIdvsZUID": {
             "type": "object",
-            "properties": {
-                "114398000000002005": {
-                    "type": "string"
-                },
-                "114398000000002003": {
-                    "type": "string"
-                }
-            }
+            "properties": {}
         },
         "status": {
             "type": "string"
+        },
+        "record": {
+            "type": "object",
+            "properties":
+            {
+                "startDate": {
+                    "type": ["string", "integer","null"]
+                }
+            }
         }
     }
 }
