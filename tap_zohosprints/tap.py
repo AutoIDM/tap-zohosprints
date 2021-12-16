@@ -14,6 +14,8 @@ from tap_zohosprints.streams import (
     BacklogsStream,
     BacklogItemsStream,
     BacklogItemDetailsStream,
+    SprintItemDetailsStream,
+    SprintItemsStream,
 )
 # TODO: Compile a list of custom stream types here
 #       OR rewrite discover_streams() below with your custom logic.
@@ -26,6 +28,8 @@ STREAM_TYPES = [
     BacklogsStream,
     BacklogItemsStream,
     BacklogItemDetailsStream,
+    SprintItemDetailsStream,
+    SprintItemsStream,
 ]
 
 

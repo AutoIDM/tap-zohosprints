@@ -1,9 +1,10 @@
 """REST client handling, including ZohoSprintsStream base class."""
 
+import backoff
 import copy
 import requests
 from pathlib import Path
-from typing import Any, Dict, Optional, Union, List, Iterable
+from typing import Any, Dict, Optional, Union, List, Iterable, cast
 
 from memoization import cached
 
@@ -102,13 +103,106 @@ class ZohoSprintsStream(RESTStream):
         # TODO: Delete this method if not needed.
         return row
 
+    @backoff.on_exception(
+        backoff.expo,
+        (requests.exceptions.RequestException),
+        max_tries=5,
+        giveup=lambda e: e.response is not None and (not(e.response.status_code == 400 and e.response.content.get("code") == 7602.1) and (400 <= e.response.status_code < 500)),
+        factor=2,
+    )
+    def _request_with_backoff(
+        self, prepared_request: requests.PreparedRequest, context: Optional[dict]
+    ) -> requests.Response:
+        """TODO.
+
+        Args:
+            prepared_request: TODO
+            context: Stream partition or context dictionary.
+
+        Returns:
+            TODO
+
+        Raises:
+            RuntimeError: TODO
+        """
+        response = self.requests_session.send(prepared_request)
+        code_response = response.json().get("code") 
+        self.logger.info(f"status_code {response.status_code}. response json: {response.json()}. code: {code_response}")
+        if self._LOG_REQUEST_METRICS:
+            extra_tags = {}
+            if self._LOG_REQUEST_METRIC_URLS:
+                extra_tags["url"] = cast(str, prepared_request.path_url)
+            self._write_request_duration_log(
+                endpoint=self.path,
+                response=response,
+                context=context,
+                extra_tags=extra_tags,
+            )
+        if response.status_code in [401, 403]:
+            self.logger.info("Failed request for {}".format(prepared_request.url))
+            self.logger.info(
+                f"Reason: {response.status_code} - {str(response.content)}"
+            )
+            raise RuntimeError(
+                "Requested resource was unauthorized, forbidden, or not found."
+            )
+        elif response.status_code == 400 and response.json().get("code") == 7602.1 :
+            self.logger.info(
+                f"Error making request to API: {prepared_request.url} "
+                f"[{response.status_code} - {str(response.content)}]".replace(
+                    "\\n", "\n"
+                    )
+                )
+            raise requests.exceptions.RequestException
+        elif response.status_code >= 400:
+            raise RuntimeError(
+                f"Error making request to API: {prepared_request.url} "
+                f"[{response.status_code} - {str(response.content)}]".replace(
+                    "\\n", "\n"
+                )
+            )
+        self.logger.debug("Response received successfully.")
+        return response
 class ZohoSprintsPropsStream(ZohoSprintsStream):
+    next_page_token_jsonpath = "$.nextIndex"
     
     def parse_response(self, response: requests.Response) -> Iterable[dict]:
         """Parse the response and return an iterator of result rows."""
 
         #Raise if not implemented
         raise(NotImplementedError)
+    
+    def get_next_page_token(
+        self, response: requests.Response, previous_token: Optional[Any]
+    ) -> Optional[Any]:
+        """Return a token for identifying next page or None if no more pages."""
+        # TODO: If pagination is required, return a token which can be used to get the
+        #       next page. If this is the final page, return "None" to end the
+        #       pagination loop.
+        if self.next_page_token_jsonpath:
+            all_matches = extract_jsonpath(
+                self.next_page_token_jsonpath, response.json()
+            )
+            first_match = next(iter(all_matches), None)
+            next_page_token = first_match
+        else:
+            next_page_token = None
+
+        return next_page_token
+
+    def get_url_params(
+        self, context: Optional[dict], next_page_token: Optional[Any]
+    ) -> Dict[str, Any]:
+        """Return a dictionary of values to be used in URL parameterization."""
+        params: dict = {}
+        params["index"]=1
+        params["range"]=100
+        if next_page_token:
+            params["index"] = next_page_token
+        #if self.replication_key:
+            #params["sort"] = "asc"
+            #params["order_by"] = self.replication_key
+        return params
 
     #Should add a few tests here
     def property_unfurler(self, 
