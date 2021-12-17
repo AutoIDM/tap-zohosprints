@@ -10,22 +10,29 @@ from typing import Any, Dict, Optional, Union, List, Iterable, cast
 from memoization import cached
 
 from singer_sdk.helpers.jsonpath import extract_jsonpath
-from singer_sdk.authenticators import SingletonMeta, APIAuthenticatorBase, SimpleAuthenticator, OAuthAuthenticator, OAuthJWTAuthenticator
-from singer_sdk.streams import RESTStream 
+from singer_sdk.authenticators import (
+    SingletonMeta,
+    APIAuthenticatorBase,
+    SimpleAuthenticator,
+    OAuthAuthenticator,
+    OAuthJWTAuthenticator,
+)
+from singer_sdk.streams import RESTStream
 
 SCHEMAS_DIR = Path(__file__).parent / Path("./schemas")
 
-class ZohoSprintsAuthenticator(OAuthAuthenticator, metaclass=SingletonMeta):
 
+class ZohoSprintsAuthenticator(OAuthAuthenticator, metaclass=SingletonMeta):
     @property
     def oauth_request_body(self) -> dict:
         return {
-            'grant_type': 'refresh_token',
-            'redirect_uri': "http://localhost",#not needed for our use, but api requires it
-            'client_id': self.config["client_id"],
-            'client_secret': self.config["client_secret"],
-            'refresh_token': self.config["refresh_token"],
+            "grant_type": "refresh_token",
+            "redirect_uri": "http://localhost",  # not needed for our use, but api requires it
+            "client_id": self.config["client_id"],
+            "client_secret": self.config["client_secret"],
+            "refresh_token": self.config["refresh_token"],
         }
+
 
 class ZohoSprintsStream(RESTStream):
     """ZohoSprints stream class."""
@@ -44,7 +51,9 @@ class ZohoSprintsStream(RESTStream):
     @cached
     def authenticator(self) -> ZohoSprintsAuthenticator:
         """Return a new authenticator object."""
-        return ZohoSprintsAuthenticator(stream=self, auth_endpoint=self.config["oauth_url"])
+        return ZohoSprintsAuthenticator(
+            stream=self, auth_endpoint=self.config["oauth_url"]
+        )
 
     @property
     def http_headers(self) -> dict:
@@ -107,22 +116,36 @@ class ZohoSprintsStream(RESTStream):
     def api_limit_checker(self):
         now = time.time()
         api_time_bins = 60
-        requests_per_bin = 30 
-        if (self._tap.api_limit_number_of_calls_since_last_checkpoint >= requests_per_bin):
-            #How much time to sleepy for?
+        requests_per_bin = 30
+        if (
+            self._tap.api_limit_number_of_calls_since_last_checkpoint
+            >= requests_per_bin
+        ):
+            # How much time to sleepy for?
             sleepy_time = api_time_bins - (now - self._tap.api_limit_last_checkpoint)
-            if (sleepy_time >= 0):
-                self.logger.info(f"API Limit reached, sleeping for {sleepy_time} seconds.") 
+            if sleepy_time >= 0:
+                self.logger.info(
+                    f"API Limit reached, sleeping for {sleepy_time} seconds."
+                )
                 time.sleep(sleepy_time)
             self._tap.api_limit_number_of_calls_since_last_checkpoint = 0
             self._tap.api_limit_last_checkpoint = time.time()
-        self._tap.api_limit_number_of_calls_since_last_checkpoint = self._tap.api_limit_number_of_calls_since_last_checkpoint + 1 
+        self._tap.api_limit_number_of_calls_since_last_checkpoint = (
+            self._tap.api_limit_number_of_calls_since_last_checkpoint + 1
+        )
 
     @backoff.on_exception(
         backoff.expo,
         (requests.exceptions.RequestException),
         max_tries=5,
-        giveup=lambda e: e.response is not None and (not(e.response.status_code == 400 and e.response.content.get("code") == 7602.1) and (400 <= e.response.status_code < 500)),
+        giveup=lambda e: e.response is not None
+        and (
+            not (
+                e.response.status_code == 400
+                and e.response.content.get("code") == 7602.1
+            )
+            and (400 <= e.response.status_code < 500)
+        ),
         factor=2,
     )
     def _request_with_backoff(
@@ -143,8 +166,10 @@ class ZohoSprintsStream(RESTStream):
         self.api_limit_checker()
 
         response = self.requests_session.send(prepared_request)
-        code_response = response.json().get("code") 
-        self.logger.info(f"status_code {response.status_code}. response json: {response.json()}. code: {code_response}")
+        code_response = response.json().get("code")
+        self.logger.info(
+            f"status_code {response.status_code}. response json: {response.json()}. code: {code_response}"
+        )
         if self._LOG_REQUEST_METRICS:
             extra_tags = {}
             if self._LOG_REQUEST_METRIC_URLS:
@@ -163,13 +188,13 @@ class ZohoSprintsStream(RESTStream):
             raise RuntimeError(
                 "Requested resource was unauthorized, forbidden, or not found."
             )
-        elif response.status_code == 400 and response.json().get("code") == 7602.1 :
+        elif response.status_code == 400 and response.json().get("code") == 7602.1:
             self.logger.info(
                 f"Error making request to API: {prepared_request.url} "
                 f"[{response.status_code} - {str(response.content)}]".replace(
                     "\\n", "\n"
-                    )
                 )
+            )
             raise requests.exceptions.RequestException
         elif response.status_code >= 400:
             raise RuntimeError(
@@ -180,15 +205,17 @@ class ZohoSprintsStream(RESTStream):
             )
         self.logger.debug("Response received successfully.")
         return response
+
+
 class ZohoSprintsPropsStream(ZohoSprintsStream):
     next_page_token_jsonpath = "$.nextIndex"
-    
+
     def parse_response(self, response: requests.Response) -> Iterable[dict]:
         """Parse the response and return an iterator of result rows."""
 
-        #Raise if not implemented
-        raise(NotImplementedError)
-    
+        # Raise if not implemented
+        raise (NotImplementedError)
+
     def get_next_page_token(
         self, response: requests.Response, previous_token: Optional[Any]
     ) -> Optional[Any]:
@@ -212,51 +239,52 @@ class ZohoSprintsPropsStream(ZohoSprintsStream):
     ) -> Dict[str, Any]:
         """Return a dictionary of values to be used in URL parameterization."""
         params: dict = {}
-        params["index"]=1
-        params["range"]=100
+        params["index"] = 1
+        params["range"] = 100
         if next_page_token:
             params["index"] = next_page_token
-        #if self.replication_key:
-            #params["sort"] = "asc"
-            #params["order_by"] = self.replication_key
+        # if self.replication_key:
+        # params["sort"] = "asc"
+        # params["order_by"] = self.replication_key
         return params
 
-    #Should add a few tests here
-    def property_unfurler(self, 
-            response: requests.Response,
-            prop_key: str,
-            ids_key: str,
-            jobj_key: str,
-            primary_key_name: str,
-            ) -> Iterable[dict]:
+    # Should add a few tests here
+    def property_unfurler(
+        self,
+        response: requests.Response,
+        prop_key: str,
+        ids_key: str,
+        jobj_key: str,
+        primary_key_name: str,
+    ) -> Iterable[dict]:
         """
         Zohosprints embeds data inside of a JObj key.
-        
+
         Example of a response like this is https://sprints.zoho.com/apidoc.html#Getallepics
         epic_prop has the properties
         epicJObj has all the data
 
-        While one option would be to leave data in this format, we decided not 
-        to because: 
-        1) Matching the _prop and JObj properties has to happen somewhere 
-        downstream, doing this mapping in your downstream system is painful and requires more 
+        While one option would be to leave data in this format, we decided not
+        to because:
+        1) Matching the _prop and JObj properties has to happen somewhere
+        downstream, doing this mapping in your downstream system is painful and requires more
         knowledge then you'd like to have to have about the source data.
 
-        2)we have to run discovery to populate the proper schemas 
+        2)we have to run discovery to populate the proper schemas
         when there's custom fields that can be added to epic_prop (Scenario is
         most likely for Items not Epics), this means we have to parse through
         this data anyways, so why not also populate a record object that's
         much easier for us humans to use!
 
         Embded this data under a "record" object because there could be (and is)
-        overlap of keys in this object and the "root" object.  
+        overlap of keys in this object and the "root" object.
 
-        Maybe this is the wrong decision? Post an issue, and let us know your 
+        Maybe this is the wrong decision? Post an issue, and let us know your
         thoughts!
 
         Parse the response and return an iterator of result rows.
         """
-        #Create a record object
+        # Create a record object
         json = response.json()
         props: Dict = json.get(prop_key)
         ids: List = json.get(ids_key)
