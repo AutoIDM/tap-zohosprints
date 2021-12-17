@@ -3,6 +3,7 @@
 import backoff
 import copy
 import requests
+import time
 from pathlib import Path
 from typing import Any, Dict, Optional, Union, List, Iterable, cast
 
@@ -103,6 +104,20 @@ class ZohoSprintsStream(RESTStream):
         # TODO: Delete this method if not needed.
         return row
 
+    def api_limit_checker(self):
+        now = time.time()
+        api_time_bins = 60
+        requests_per_bin = 30 
+        if (self._tap.api_limit_number_of_calls_since_last_checkpoint >= requests_per_bin):
+            #How much time to sleepy for?
+            sleepy_time = api_time_bins - (now - self._tap.api_limit_last_checkpoint)
+            if (sleepy_time >= 0):
+                self.logger.info(f"API Limit reached, sleeping for {sleepy_time} seconds.") 
+                time.sleep(sleepy_time)
+            self._tap.api_limit_number_of_calls_since_last_checkpoint = 0
+            self._tap.api_limit_last_checkpoint = time.time()
+        self._tap.api_limit_number_of_calls_since_last_checkpoint = self._tap.api_limit_number_of_calls_since_last_checkpoint + 1 
+
     @backoff.on_exception(
         backoff.expo,
         (requests.exceptions.RequestException),
@@ -125,6 +140,8 @@ class ZohoSprintsStream(RESTStream):
         Raises:
             RuntimeError: TODO
         """
+        self.api_limit_checker()
+
         response = self.requests_session.send(prepared_request)
         code_response = response.json().get("code") 
         self.logger.info(f"status_code {response.status_code}. response json: {response.json()}. code: {code_response}")
