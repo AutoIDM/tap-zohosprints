@@ -48,7 +48,7 @@ class MetaProjectsStream(ZohoSprintsPropsStream):
     Tradeoff seemed reasonable for easier to understand code. 
     """
     name = "meta_project"
-    path = "/team/{team_id}/projects/?action=allprojects&index=1&range=10"
+    path = "/team/{team_id}/projects/?action=allprojects"
     parent_stream_type = TeamsStream
     primary_keys = ["project_id"]
     replication_key = None
@@ -78,6 +78,20 @@ class ProjectsStream(ZohoSprintsPropsStream):
     primary_keys = ["project_id"]
     replication_key = None
     schema_filepath = SCHEMAS_DIR / "project.json"
+   
+    #TODO can we get rid of this?
+    #Needed as this endpoint doesn't take an index/range as other PropsStreams do
+    def get_url_params(
+        self, context: Optional[dict], next_page_token: Optional[Any]
+    ) -> Dict[str, Any]:
+        """Return a dictionary of values to be used in URL parameterization."""
+        params: dict = {}
+        if next_page_token:
+            params["index"] = next_page_token
+        #if self.replication_key:
+            #params["sort"] = "asc"
+            #params["order_by"] = self.replication_key
+        return params
     
     def parse_response(self, response: requests.Response) -> Iterable[dict]:
         """Parse the response and return an iterator of result rows."""
@@ -102,7 +116,7 @@ class ProjectsStream(ZohoSprintsPropsStream):
 class EpicsStream(ZohoSprintsPropsStream):
     """Epics"""
     name = "epic"
-    path = "/team/{team_id}/projects/{project_id}/epic/?action=data&index=1&range=10"
+    path = "/team/{team_id}/projects/{project_id}/epic/?action=data"
     parent_stream_type = ProjectsStream
     primary_keys = ["epic_id"]
     replication_key = None
@@ -121,7 +135,7 @@ class EpicsStream(ZohoSprintsPropsStream):
 class SprintsStream(ZohoSprintsPropsStream):
     """Sprints"""
     name = "sprint"
-    path = "/team/{team_id}/projects/{project_id}/sprints/?action=data&index=1&range=10&type=[1,2,3,4]"
+    path = "/team/{team_id}/projects/{project_id}/sprints/?action=data&type=[1,2,3,4]"
     parent_stream_type = ProjectsStream
     primary_keys = ["sprint_id"]
     replication_key = None
@@ -135,6 +149,14 @@ class SprintsStream(ZohoSprintsPropsStream):
                 ids_key="sprintIds",
                 jobj_key="sprintJObj",
                 primary_key_name="sprint_id")
+
+    def get_child_context(self, record: dict, context: Optional[dict]) -> dict:
+        """Return a context dictionary for child streams."""
+        return {
+            "team_id":context["team_id"],
+            "project_id":context["project_id"],
+            "sprint_id":record["sprint_id"],
+            }
 
 class BacklogsStream(ZohoSprintsStream):
     """Backlogs"""
@@ -156,7 +178,7 @@ class BacklogsStream(ZohoSprintsStream):
 class BacklogItemsStream(ZohoSprintsPropsStream):
     """Items"""
     name = "items_backlog"
-    path = "/team/{team_id}/projects/{project_id}/sprints/{backlog_id}/item/?action=sprintitems&index=1&range=10&subitem=true"
+    path = "/team/{team_id}/projects/{project_id}/sprints/{backlog_id}/item/?action=sprintitems&subitem=true"
     parent_stream_type = BacklogsStream
     primary_keys = ["item_id"]
     replication_key = None
@@ -189,6 +211,79 @@ class BacklogItemDetailsStream(ZohoSprintsPropsStream):
     primary_keys = ["item_id"]
     replication_key = None
     schema_filepath = SCHEMAS_DIR / "item.json"
+   
+    #TODO this is duplicated for ProjectDetails as well
+    def get_url_params(
+        self, context: Optional[dict], next_page_token: Optional[Any]
+    ) -> Dict[str, Any]:
+        """Return a dictionary of values to be used in URL parameterization."""
+        params: dict = {}
+        if next_page_token:
+            params["index"] = next_page_token
+        #if self.replication_key:
+            #params["sort"] = "asc"
+            #params["order_by"] = self.replication_key
+        return params
+    
+    def parse_response(self, response: requests.Response) -> Iterable[dict]:
+        """Parse the response and return an iterator of result rows."""
+        #Create a record object
+        yield from self.property_unfurler(response=response,
+                prop_key="item_prop",
+                ids_key="itemIds",
+                jobj_key="itemJObj",
+                primary_key_name="item_id")
+#TODO need to get Items Individually due to Custom Fields
+
+class SprintItemsStream(ZohoSprintsPropsStream):
+    """Items"""
+    name = "items_sprint"
+    path = "/team/{team_id}/projects/{project_id}/sprints/{sprint_id}/item/?action=sprintitems&subitem=true"
+    parent_stream_type = SprintsStream
+    primary_keys = ["item_id"]
+    replication_key = None
+    schema_filepath = SCHEMAS_DIR / "item.json"
+    
+    def parse_response(self, response: requests.Response) -> Iterable[dict]:
+        """Parse the response and return an iterator of result rows."""
+        #Create a record object
+        yield from self.property_unfurler(response=response,
+                prop_key="item_prop",
+                ids_key="itemIds",
+                jobj_key="itemJObj",
+                primary_key_name="item_id")
+
+    def get_child_context(self, record: dict, context: Optional[dict]) -> dict:
+        """Return a context dictionary for child streams."""
+        return {
+            "team_id":context["team_id"],
+            "project_id":context["project_id"],
+            "sprint_id":context["sprint_id"],
+            "item_id":record["item_id"],
+        }
+
+class SprintItemDetailsStream(ZohoSprintsPropsStream):
+    """Items"""
+    #TODO change this name
+    name = "items_sprint"
+    path = "/team/{team_id}/projects/{project_id}/sprints/{sprint_id}/item/{item_id}/?action=details"
+    parent_stream_type = SprintItemsStream
+    primary_keys = ["item_id"]
+    replication_key = None
+    schema_filepath = SCHEMAS_DIR / "item.json"
+   
+    #TODO this is duplicated for ProjectDetails as well
+    def get_url_params(
+        self, context: Optional[dict], next_page_token: Optional[Any]
+    ) -> Dict[str, Any]:
+        """Return a dictionary of values to be used in URL parameterization."""
+        params: dict = {}
+        if next_page_token:
+            params["index"] = next_page_token
+        #if self.replication_key:
+            #params["sort"] = "asc"
+            #params["order_by"] = self.replication_key
+        return params
     
     def parse_response(self, response: requests.Response) -> Iterable[dict]:
         """Parse the response and return an iterator of result rows."""
