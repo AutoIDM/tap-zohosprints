@@ -369,5 +369,29 @@ class SprintItemDetailsStream(ZohoSprintsPropsStream):
             primary_key_name="item_id",
         )
 
+class SprintUsers(ZohoSprintsPropsStream):
+    """Sprint User Stream"""
 
-# TODO need to get Items Individually due to Custom Fields
+    name = "sprint_user"
+    path = "/team/{team_id}/projects/{project_id}/sprints/{sprint_id}/users/"
+    parent_stream_type = SprintsStream
+    primary_keys = ["user_id"]
+    replication_key = None
+    schema_filepath = SCHEMAS_DIR / "sprint_user.json"
+
+    def parse_response(self, response: requests.Response) -> Iterable[dict]:
+        """Parse the response and return an iterator of result rows."""
+        # Create a record object
+        yield from property_unfurler(
+            response=response,
+            prop_key="user_prop",
+            ids_key="userIds",
+            jobj_key="userJObj",
+            primary_key_name="user_id",
+        )
+    
+    def get_url_params(
+        self, context: Optional[dict], next_page_token: Optional[Any]
+    ) -> Dict[str, Any]:
+        """Return a dictionary of values to be used in URL parameterization."""
+        return {"action":"alldata"}
