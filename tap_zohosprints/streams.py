@@ -7,6 +7,7 @@ from singer_sdk import typing as th  # JSON Schema typing helpers
 
 from tap_zohosprints.client import ZohoSprintsStream
 from tap_zohosprints.client import ZohoSprintsPropsStream
+from tap_zohosprints.client import property_unfurler
 import copy
 import requests
 
@@ -67,7 +68,7 @@ class MetaProjectsStream(ZohoSprintsPropsStream):
     def parse_response(self, response: requests.Response) -> Iterable[dict]:
         """Parse the response and return an iterator of result rows."""
         # Create a record object
-        yield from self.property_unfurler(
+        yield from property_unfurler(
             response=response,
             prop_key="project_prop",
             ids_key="projectIds",
@@ -107,7 +108,7 @@ class ProjectsStream(ZohoSprintsPropsStream):
     def parse_response(self, response: requests.Response) -> Iterable[dict]:
         """Parse the response and return an iterator of result rows."""
         # Create a record object
-        yield from self.property_unfurler(
+        yield from property_unfurler(
             response=response,
             prop_key="project_prop",
             ids_key="projectIds",
@@ -126,6 +127,40 @@ class ProjectsStream(ZohoSprintsPropsStream):
             "project_id": record["project_id"],
         }
 
+class TagsStream(ZohoSprintsPropsStream):
+    """TagsStream"""
+
+    name = "tag"
+    path = "/team/{team_id}/tags/?action=data&index=1&range=1000"
+    parent_stream_type = TeamsStream
+    primary_keys = ["tagId"]
+    replication_key = None
+    schema_filepath = SCHEMAS_DIR / "tag.json"
+
+    # TODO can we get rid of this?
+    # Needed as this endpoint doesn't take an index/range as other PropsStreams do
+    def get_url_params(
+        self, context: Optional[dict], next_page_token: Optional[Any]
+    ) -> Dict[str, Any]:
+        """Return a dictionary of values to be used in URL parameterization."""
+        params: dict = {}
+        if next_page_token:
+            params["index"] = next_page_token
+        # if self.replication_key:
+        # params["sort"] = "asc"
+        # params["order_by"] = self.replication_key
+        return params
+
+    def parse_response(self, response: requests.Response) -> Iterable[dict]:
+        """Parse the response and return an iterator of result rows."""
+        # Create a record object
+        yield from property_unfurler(
+            response=response,
+            prop_key="zsTag_prop",
+            ids_key="zsTagIds",
+            jobj_key="zsTagJObj",
+            primary_key_name="tagId",
+        )
 
 class EpicsStream(ZohoSprintsPropsStream):
     """Epics"""
@@ -140,7 +175,7 @@ class EpicsStream(ZohoSprintsPropsStream):
     def parse_response(self, response: requests.Response) -> Iterable[dict]:
         """Parse the response and return an iterator of result rows."""
         # Create a record object
-        yield from self.property_unfurler(
+        yield from property_unfurler(
             response=response,
             prop_key="epic_prop",
             ids_key="epicIds",
@@ -162,7 +197,7 @@ class SprintsStream(ZohoSprintsPropsStream):
     def parse_response(self, response: requests.Response) -> Iterable[dict]:
         """Parse the response and return an iterator of result rows."""
         # Create a record object
-        yield from self.property_unfurler(
+        yield from property_unfurler(
             response=response,
             prop_key="sprint_prop",
             ids_key="sprintIds",
@@ -211,7 +246,7 @@ class BacklogItemsStream(ZohoSprintsPropsStream):
     def parse_response(self, response: requests.Response) -> Iterable[dict]:
         """Parse the response and return an iterator of result rows."""
         # Create a record object
-        yield from self.property_unfurler(
+        yield from property_unfurler(
             response=response,
             prop_key="item_prop",
             ids_key="itemIds",
@@ -256,7 +291,7 @@ class BacklogItemDetailsStream(ZohoSprintsPropsStream):
     def parse_response(self, response: requests.Response) -> Iterable[dict]:
         """Parse the response and return an iterator of result rows."""
         # Create a record object
-        yield from self.property_unfurler(
+        yield from property_unfurler(
             response=response,
             prop_key="item_prop",
             ids_key="itemIds",
@@ -281,7 +316,7 @@ class SprintItemsStream(ZohoSprintsPropsStream):
     def parse_response(self, response: requests.Response) -> Iterable[dict]:
         """Parse the response and return an iterator of result rows."""
         # Create a record object
-        yield from self.property_unfurler(
+        yield from property_unfurler(
             response=response,
             prop_key="item_prop",
             ids_key="itemIds",
@@ -326,7 +361,7 @@ class SprintItemDetailsStream(ZohoSprintsPropsStream):
     def parse_response(self, response: requests.Response) -> Iterable[dict]:
         """Parse the response and return an iterator of result rows."""
         # Create a record object
-        yield from self.property_unfurler(
+        yield from property_unfurler(
             response=response,
             prop_key="item_prop",
             ids_key="itemIds",

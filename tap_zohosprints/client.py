@@ -248,9 +248,7 @@ class ZohoSprintsPropsStream(ZohoSprintsStream):
         # params["order_by"] = self.replication_key
         return params
 
-    # Should add a few tests here
-    def property_unfurler(
-        self,
+def property_unfurler(
         response: requests.Response,
         prop_key: str,
         ids_key: str,
