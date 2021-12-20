@@ -1,0 +1,25 @@
+{
+	"next": false,
+	"hasItemTagPermission": true,
+	"ItemTagCount": 25,
+	"userDisplayName": {},
+	"zsTagJObj": {
+		"114398000000007021": [
+			"114398000000007021",
+			"dsaf",
+			"#f17f23",
+			"114398000000002003"
+		]
+	},
+	"zsTag_prop": {
+		"tagId": 0,
+		"createdBy": 3,
+		"colorCode": 2,
+		"tagName": 1
+	},
+	"zsTagIds": [
+		"114398000000007021"
+	],
+	"zsuserIdvsZUID": {},
+	"status": "success"
+}
