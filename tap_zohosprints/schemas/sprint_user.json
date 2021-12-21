@@ -1,0 +1,32 @@
+{
+    "type": "object",
+    "properties": {
+        "next": {
+            "type": "boolean"
+        },
+        "userIds": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        "user_id": {
+            "type": "string"
+        },
+        "team_id": {
+            "type": "string"
+        },
+        "project_id": {
+            "type": "string"
+        },
+        "sprint_id": {
+            "type": "string"
+        },
+        "status": {
+            "type": "string"
+        },
+        "record": {
+            "type": "object"
+        }
+    }
+}
