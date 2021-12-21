@@ -136,13 +136,13 @@ class ZohoSprintsStream(RESTStream):
         )
 
     def validate_response(self, response):
-        #API Limit, cheeky putting it here but I don't have a better spot
+        # API Limit, cheeky putting it here but I don't have a better spot
         self.api_limit_checker()
         data = response.json()
         if data.get("code") == 7602.1:
             raise FatalAPIError("Error, locked out of the API")
-        
-	# Still catch error status codes
+
+        # Still catch error status codes
         super().validate_response(response)
 
     def validate_response(self, response: requests.Response) -> None:
@@ -161,12 +161,13 @@ class ZohoSprintsStream(RESTStream):
             f"{response.status_code} Client Error: "
             f"{response.reason} for path: {self.path}"
             f". Response content: {response.content}"
-            )
+        )
         if 400 <= response.status_code < 500:
             raise FatalAPIError(msg)
 
         elif 500 <= response.status_code < 600:
             raise RetriableAPIError(msg)
+
 
 class ZohoSprintsPropsStream(ZohoSprintsStream):
     next_page_token_jsonpath = "$.nextIndex"
