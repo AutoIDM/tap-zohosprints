@@ -127,6 +127,7 @@ class ProjectsStream(ZohoSprintsPropsStream):
             "project_id": record["project_id"],
         }
 
+
 class TagsStream(ZohoSprintsPropsStream):
     """TagsStream"""
 
@@ -161,6 +162,7 @@ class TagsStream(ZohoSprintsPropsStream):
             jobj_key="zsTagJObj",
             primary_key_name="tagId",
         )
+
 
 class EpicsStream(ZohoSprintsPropsStream):
     """Epics"""
@@ -369,6 +371,7 @@ class SprintItemDetailsStream(ZohoSprintsPropsStream):
             primary_key_name="item_id",
         )
 
+
 class SprintUsers(ZohoSprintsPropsStream):
     """Sprint User Stream"""
 
@@ -389,12 +392,13 @@ class SprintUsers(ZohoSprintsPropsStream):
             jobj_key="userJObj",
             primary_key_name="user_id",
         )
-    
+
     def get_url_params(
         self, context: Optional[dict], next_page_token: Optional[Any]
     ) -> Dict[str, Any]:
         """Return a dictionary of values to be used in URL parameterization."""
-        return {"action":"alldata"}
+        return {"action": "alldata"}
+
 
 class ProjectUsers(ZohoSprintsPropsStream):
     """Project User Stream"""
