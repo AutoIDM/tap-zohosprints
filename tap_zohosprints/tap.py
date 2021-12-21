@@ -19,6 +19,7 @@ from tap_zohosprints.streams import (
     SprintItemsStream,
     TagsStream,
     SprintUsers,
+    ProjectUsers,
 )
 
 # TODO: Compile a list of custom stream types here
@@ -36,6 +37,7 @@ STREAM_TYPES = [
     SprintItemsStream,
     TagsStream,
     SprintUsers,
+    ProjectUsers,
 ]
 
 

@@ -395,3 +395,24 @@ class SprintUsers(ZohoSprintsPropsStream):
     ) -> Dict[str, Any]:
         """Return a dictionary of values to be used in URL parameterization."""
         return {"action":"alldata"}
+
+class ProjectUsers(ZohoSprintsPropsStream):
+    """Project User Stream"""
+
+    name = "project_user"
+    path = "/team/{team_id}/projects/{project_id}/users/?action=data"
+    parent_stream_type = ProjectsStream
+    primary_keys = ["userId"]
+    replication_key = None
+    schema_filepath = SCHEMAS_DIR / "project_user.json"
+
+    def parse_response(self, response: requests.Response) -> Iterable[dict]:
+        """Parse the response and return an iterator of result rows."""
+        # Create a record object
+        yield from property_unfurler(
+            response=response,
+            prop_key="user_prop",
+            ids_key="userIds",
+            jobj_key="userJObj",
+            primary_key_name="userId",
+        )
