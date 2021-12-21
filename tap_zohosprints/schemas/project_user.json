@@ -1,0 +1,26 @@
+{
+    "type": "object",
+    "properties": {
+        "next": {
+            "type": "boolean"
+        },
+        "userIds": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        "projStatus": {
+            "type": "integer"
+        },
+        "status": {
+            "type": "string"
+        },
+        "userId": {
+            "type": "string"
+        },
+        "record": {
+            "type": "object"
+        }
+    }
+}

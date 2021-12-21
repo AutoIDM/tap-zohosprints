@@ -38,8 +38,7 @@ We need to get a client ID and Secret to setup our tap
 1. Generate a scoped code
     1. Click the Self client (in the api console)
     1. Generate Code tab
-    1. Scope: ZohoSprints.teams.READ, ZohoSprints.projects.READ, ZohoSprints.epic.READ, ZohoSprints.sprints.READ, ZohoSprints.items.READ
-    (Will get added to later)
+    1. Scope: ZohoSprints.teams.READ, ZohoSprints.projects.READ, ZohoSprints.epic.READ, ZohoSprints.sprints.READ, ZohoSprints.items.READ, ZohoSprints.projectsettings.READ, ZohoSprints.meetings.READ, ZohoSprints.timesheets.READ, ZohoSprints.release.READ, ZohoSprints.teamusers.READ, ZohoSprints.projectusers.READ
     1. Time Duration: 10 minutes or so
     1. Create, save this code for the refresh token step below
 
