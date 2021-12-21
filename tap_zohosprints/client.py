@@ -17,6 +17,7 @@ from singer_sdk.authenticators import (
     OAuthAuthenticator,
     OAuthJWTAuthenticator,
 )
+from singer_sdk.exceptions import FatalAPIError, RetriableAPIError
 from singer_sdk.streams import RESTStream
 
 SCHEMAS_DIR = Path(__file__).parent / Path("./schemas")
@@ -134,78 +135,38 @@ class ZohoSprintsStream(RESTStream):
             self._tap.api_limit_number_of_calls_since_last_checkpoint + 1
         )
 
-    @backoff.on_exception(
-        backoff.expo,
-        (requests.exceptions.RequestException),
-        max_tries=5,
-        giveup=lambda e: e.response is not None
-        and (
-            not (
-                e.response.status_code == 400
-                and e.response.content.get("code") == 7602.1
-            )
-            and (400 <= e.response.status_code < 500)
-        ),
-        factor=2,
-    )
-    def _request_with_backoff(
-        self, prepared_request: requests.PreparedRequest, context: Optional[dict]
-    ) -> requests.Response:
-        """TODO.
+    def validate_response(self, response):
+        #API Limit, cheeky putting it here but I don't have a better spot
+        self.api_limit_checker()
+        data = response.json()
+        if data.get("code") == 7602.1:
+            raise FatalAPIError("Error, locked out of the API")
+        
+	# Still catch error status codes
+        super().validate_response(response)
 
+    def validate_response(self, response: requests.Response) -> None:
+        """Validate HTTP response.
         Args:
-            prepared_request: TODO
-            context: Stream partition or context dictionary.
-
-        Returns:
-            TODO
+            response: A `requests.Response`_ object.
 
         Raises:
-            RuntimeError: TODO
+            FatalAPIError: If the request is not retriable.
+            RetriableAPIError: If the request is retriable.
+
+        .. _requests.Response:
+            https://docs.python-requests.org/en/latest/api/#requests.Response
         """
-        self.api_limit_checker()
+        msg = (
+            f"{response.status_code} Client Error: "
+            f"{response.reason} for path: {self.path}"
+            f". Response content: {response.content}"
+            )
+        if 400 <= response.status_code < 500:
+            raise FatalAPIError(msg)
 
-        response = self.requests_session.send(prepared_request)
-        code_response = response.json().get("code")
-        self.logger.info(
-            f"status_code {response.status_code}. response json: {response.json()}. code: {code_response}"
-        )
-        if self._LOG_REQUEST_METRICS:
-            extra_tags = {}
-            if self._LOG_REQUEST_METRIC_URLS:
-                extra_tags["url"] = cast(str, prepared_request.path_url)
-            self._write_request_duration_log(
-                endpoint=self.path,
-                response=response,
-                context=context,
-                extra_tags=extra_tags,
-            )
-        if response.status_code in [401, 403]:
-            self.logger.info("Failed request for {}".format(prepared_request.url))
-            self.logger.info(
-                f"Reason: {response.status_code} - {str(response.content)}"
-            )
-            raise RuntimeError(
-                "Requested resource was unauthorized, forbidden, or not found."
-            )
-        elif response.status_code == 400 and response.json().get("code") == 7602.1:
-            self.logger.info(
-                f"Error making request to API: {prepared_request.url} "
-                f"[{response.status_code} - {str(response.content)}]".replace(
-                    "\\n", "\n"
-                )
-            )
-            raise requests.exceptions.RequestException
-        elif response.status_code >= 400:
-            raise RuntimeError(
-                f"Error making request to API: {prepared_request.url} "
-                f"[{response.status_code} - {str(response.content)}]".replace(
-                    "\\n", "\n"
-                )
-            )
-        self.logger.debug("Response received successfully.")
-        return response
-
+        elif 500 <= response.status_code < 600:
+            raise RetriableAPIError(msg)
 
 class ZohoSprintsPropsStream(ZohoSprintsStream):
     next_page_token_jsonpath = "$.nextIndex"
