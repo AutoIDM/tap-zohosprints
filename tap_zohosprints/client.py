@@ -5,7 +5,7 @@ import copy
 import requests
 import time
 from pathlib import Path
-from typing import Any, Dict, Optional, Union, List, Iterable, cast
+from typing import Any, Dict, Optional, Union, List, Iterable, cast, Generator
 
 from memoization import cached
 
@@ -255,7 +255,7 @@ def property_unfurler(
     ids_key: str,
     jobj_key: str,
     primary_key_name: str,
-) -> Iterable[dict]:
+) -> Generator[dict, None, None]:
     """
     Zohosprints embeds data inside of a JObj key.
 
@@ -287,17 +287,20 @@ def property_unfurler(
     json = response.json()
     props: Dict = json.get(prop_key)
     ids: List = json.get(ids_key)
-    for id in ids:
-        record = {}
-        prop_values: List = json[jobj_key][id]
-        for property_name, property_index in props.items():
-            record[property_name] = prop_values[property_index]
+    if (json.get("hasData") == False): 
         return_object: Dict = copy.deepcopy(json)
-        return_object[primary_key_name] = id
-        return_object.pop(prop_key)
-        return_object.pop(ids_key)
-        return_object.pop(jobj_key)
-        return_object["record"] = record
-        yield return_object
-
+        yield return_object #Data is empty, stop. 
+    else:
+        for id in ids:
+            record = {}
+            prop_values: List = json[jobj_key][id]
+            for property_name, property_index in props.items():
+                record[property_name] = prop_values[property_index]
+            return_object: Dict = copy.deepcopy(json)
+            return_object[primary_key_name] = id
+            return_object.pop(prop_key)
+            return_object.pop(ids_key)
+            return_object.pop(jobj_key)
+            return_object["record"] = record
+            yield return_object
     return {}
