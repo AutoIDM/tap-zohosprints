@@ -1,0 +1,44 @@
+{
+    "type": "object",
+    "properties": {
+        "logIds": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        "hasData": {
+            "type": "boolean"
+        },
+        "userDisplayName": {
+            "type": "object"
+        },
+        "hasNext": {
+            "type": "boolean"
+        },
+        "nextIndex": {
+            "type": "integer"
+        },
+        "zsuserIdvsZUID": {
+            "type": "object"
+        },
+        "status": {
+            "type": "string"
+        },
+        "record": {
+            "type": "object"
+        },
+        "tLogId": {
+            "type": "string"
+        },
+        "team_id": {
+            "type": "string"
+        },
+        "project_id": {
+            "type": "string"
+        },
+        "sprint_id": {
+            "type": "string"
+        }
+    }
+}

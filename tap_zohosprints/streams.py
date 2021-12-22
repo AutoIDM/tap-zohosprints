@@ -420,3 +420,25 @@ class ProjectUsers(ZohoSprintsPropsStream):
             jobj_key="userJObj",
             primary_key_name="userId",
         )
+
+
+class LogHours(ZohoSprintsPropsStream):
+    """Log Hours Stream"""
+
+    name = "log_hour"
+    path = "/team/{team_id}/projects/{project_id}/sprints/{sprint_id}/timesheet/?action=logitems&listviewtype=0"
+    parent_stream_type = SprintsStream
+    primary_keys = ["tLogId"]
+    replication_key = None
+    schema_filepath = SCHEMAS_DIR / "log_hour.json"
+
+    def parse_response(self, response: requests.Response) -> Iterable[dict]:
+        """Parse the response and return an iterator of result rows."""
+        # Create a record object
+        yield from property_unfurler(
+            response=response,
+            prop_key="log_prop",
+            ids_key="logIds",
+            jobj_key="logJObj",
+            primary_key_name="tLogId",
+        )
