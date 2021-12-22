@@ -153,6 +153,7 @@ class ZohoSprintsStream(RESTStream):
         elif 500 <= response.status_code < 600:
             raise RetriableAPIError(msg)
 
+
 class ZohoSprintsPropsStream(ZohoSprintsStream):
     next_page_token_jsonpath = "$.nextIndex"
 
@@ -233,9 +234,9 @@ def property_unfurler(
     json = response.json()
     props: Dict = json.get(prop_key)
     ids: List = json.get(ids_key)
-    if (json.get("hasData") == False): 
+    if json.get("hasData") == False:
         return_object: Dict = copy.deepcopy(json)
-        yield return_object #Data is empty, stop. 
+        yield return_object  # Data is empty, stop.
     else:
         for id in ids:
             record = {}

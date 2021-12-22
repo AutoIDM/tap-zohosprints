@@ -421,6 +421,7 @@ class ProjectUsers(ZohoSprintsPropsStream):
             primary_key_name="userId",
         )
 
+
 class LogHours(ZohoSprintsPropsStream):
     """Log Hours Stream"""
 

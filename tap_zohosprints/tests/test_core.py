@@ -79,11 +79,14 @@ def test_property_unfurler(mocked_responses):
         "tagId": "114398000000007021",
     }
 
+
 def test_property_unfurler_nodata(mocked_responses):
     """ Sometimes the data comes back empty, we need to not attempt to unfurl the data """
     tag_json = ""
-    #Should probably just define the json inline as it's way easier to read
-    with open(Path(__file__).parent / Path("tag_property_unfurl_hasnodata.json")) as tag:
+    # Should probably just define the json inline as it's way easier to read
+    with open(
+        Path(__file__).parent / Path("tag_property_unfurl_hasnodata.json")
+    ) as tag:
         tag_json = tag.read()
 
     mocked_responses.add(
@@ -106,7 +109,4 @@ def test_property_unfurler_nodata(mocked_responses):
     for data in unfurled:
         print(data)
         output = data
-    assert output == {
-            "hasData": False,
-            "status": "success"
-    }
+    assert output == {"hasData": False, "status": "success"}
