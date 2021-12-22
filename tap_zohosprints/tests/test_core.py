@@ -52,7 +52,6 @@ def test_property_unfurler(mocked_responses):
         content_type="application/json",
     )
     resp = requests.get("https://autoidm.com")
-    assert resp.status_code == 200
 
     unfurled = property_unfurler(
         response=resp,
@@ -78,4 +77,36 @@ def test_property_unfurler(mocked_responses):
             "tagName": "dsaf",
         },
         "tagId": "114398000000007021",
+    }
+
+def test_property_unfurler_nodata(mocked_responses):
+    """ Sometimes the data comes back empty, we need to not attempt to unfurl the data """
+    tag_json = ""
+    #Should probably just define the json inline as it's way easier to read
+    with open(Path(__file__).parent / Path("tag_property_unfurl_hasnodata.json")) as tag:
+        tag_json = tag.read()
+
+    mocked_responses.add(
+        responses.GET,
+        "https://autoidm.com",
+        body=tag_json,
+        status=200,
+        content_type="application/json",
+    )
+    resp = requests.get("https://autoidm.com")
+
+    unfurled = property_unfurler(
+        response=resp,
+        prop_key="abcdef",
+        ids_key="hijklmn",
+        jobj_key="opqrst",
+        primary_key_name="tuVWxYZ",
+    )
+    output = None
+    for data in unfurled:
+        print(data)
+        output = data
+    assert output == {
+            "hasData": False,
+            "status": "success"
     }
