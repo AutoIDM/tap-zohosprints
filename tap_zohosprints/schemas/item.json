@@ -1,17 +1,23 @@
 {
     "type": "object",
     "properties": {
-        "item_id":{
+        "myTeamId":{
+                "type": "string"
+        },
+        "projectId":{
+                "type": "string"
+        },
+        "backlogId":{
+                "type": "string"
+        },
+        "sprintId":{
+                "type": "string"
+        },
+        "itemId":{
                 "type": "string"
         },
         "next": {
             "type": "boolean"
-        },
-        "itemIds": {
-            "type": "array",
-            "items": {
-                "type": "string"
-            }
         },
         "userDisplayName": {
             "type": "object",

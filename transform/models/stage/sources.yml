@@ -1,0 +1,17 @@
+version: 2
+
+sources: 
+  - name: tap_zohosprints
+    tables:
+      - name: backlog
+      - name: epic
+      - name: items_details_backlog
+      - name: items_details_sprint
+      - name: items_backlog
+      - name: items_sprints
+      - name: meta_project
+      - name: project
+      - name: sprint
+      - name: sprint_user
+      - name: tag
+      - name: team

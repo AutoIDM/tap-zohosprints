@@ -22,30 +22,12 @@ class TeamsStream(ZohoSprintsStream):
     primary_keys = ["ownerTeamIds"]
     replication_key = None
     # Optionally, you may also use `schema_filepath` in place of `schema`:
-    # schema_filepath = SCHEMAS_DIR / "users.json"
-    schema = th.PropertiesList(
-        th.Property("ownerTeamIds", th.ArrayType(th.StringType)),
-        th.Property("defaultPortalId", th.StringType),
-        th.Property("myTeamId", th.StringType),
-        th.Property(
-            "portals",
-            th.ArrayType(
-                th.ObjectType(
-                    th.Property("teamName", th.StringType),
-                    th.Property("isShowTeam", th.BooleanType),
-                    th.Property("orgName", th.StringType),
-                    th.Property("portalOwner", th.StringType),
-                    th.Property("type", th.IntegerType),
-                    th.Property("zsoid", th.StringType),
-                )
-            ),
-        ),
-        th.Property("status", th.StringType),
-    ).to_dict()
+    schema_filepath = SCHEMAS_DIR / "team.json"
 
     def get_child_context(self, record: dict, context: Optional[dict]) -> dict:
         """Return a context dictionary for child streams."""
-        return {"team_id": record["portals"][0]["zsoid"]}
+        #Will not work if someone has more than one portal. In that case we'll need to create multiple team records, one for each portal, or create a child stream for each portal
+        return {"myTeamId": record["myTeamId"]}
 
 
 class MetaProjectsStream(ZohoSprintsPropsStream):
@@ -56,13 +38,13 @@ class MetaProjectsStream(ZohoSprintsPropsStream):
     """
 
     name = "meta_project"
-    path = "/team/{team_id}/projects/?action=allprojects"
+    path = "/team/{myTeamId}/projects/?action=allprojects"
     parent_stream_type = TeamsStream
-    primary_keys = ["project_id"]
+    primary_keys = ["projectId"]
     replication_key = None
     schema = th.PropertiesList(
-        th.Property("project_id", th.StringType),
-        th.Property("team_id", th.StringType),
+        th.Property("projectId", th.StringType),
+        th.Property("myTeamId", th.StringType),
     ).to_dict()
     # TODO Pagination
     def parse_response(self, response: requests.Response) -> Iterable[dict]:
@@ -73,21 +55,21 @@ class MetaProjectsStream(ZohoSprintsPropsStream):
             prop_key="project_prop",
             ids_key="projectIds",
             jobj_key="projectJObj",
-            primary_key_name="project_id",
+            primary_key_name="projectId",
         )
 
     def get_child_context(self, record: dict, context: Optional[dict]) -> dict:
         """Return a context dictionary for child streams."""
-        return {"project_id": record["project_id"], "team_id": context["team_id"]}
+        return {"projectId": record["projectId"], "myTeamId": context["myTeamId"]}
 
 
 class ProjectsStream(ZohoSprintsPropsStream):
     """ProjectStream"""
 
     name = "project"
-    path = "/team/{team_id}/projects/{project_id}/?action=details"
+    path = "/team/{myTeamId}/projects/{projectId}/?action=details"
     parent_stream_type = MetaProjectsStream
-    primary_keys = ["project_id"]
+    primary_keys = ["projectId"]
     replication_key = None
     schema_filepath = SCHEMAS_DIR / "project.json"
 
@@ -113,7 +95,7 @@ class ProjectsStream(ZohoSprintsPropsStream):
             prop_key="project_prop",
             ids_key="projectIds",
             jobj_key="projectJObj",
-            primary_key_name="project_id",
+            primary_key_name="projectId",
         )
 
     # TODO get_records needs to make the Project Details object useful
@@ -123,8 +105,8 @@ class ProjectsStream(ZohoSprintsPropsStream):
     def get_child_context(self, record: dict, context: Optional[dict]) -> dict:
         """Return a context dictionary for child streams."""
         return {
-            "team_id": context["team_id"],
-            "project_id": record["project_id"],
+            "myTeamId": context["myTeamId"],
+            "projectId": record["projectId"],
         }
 
 
@@ -132,7 +114,7 @@ class TagsStream(ZohoSprintsPropsStream):
     """TagsStream"""
 
     name = "tag"
-    path = "/team/{team_id}/tags/?action=data&index=1&range=1000"
+    path = "/team/{myTeamId}/tags/?action=data&index=1&range=1000"
     parent_stream_type = TeamsStream
     primary_keys = ["tagId"]
     replication_key = None
@@ -168,9 +150,9 @@ class EpicsStream(ZohoSprintsPropsStream):
     """Epics"""
 
     name = "epic"
-    path = "/team/{team_id}/projects/{project_id}/epic/?action=data"
+    path = "/team/{myTeamId}/projects/{projectId}/epic/?action=data"
     parent_stream_type = ProjectsStream
-    primary_keys = ["epic_id"]
+    primary_keys = ["epicId"]
     replication_key = None
     schema_filepath = SCHEMAS_DIR / "epic.json"
 
@@ -182,7 +164,7 @@ class EpicsStream(ZohoSprintsPropsStream):
             prop_key="epic_prop",
             ids_key="epicIds",
             jobj_key="epicJObj",
-            primary_key_name="epic_id",
+            primary_key_name="epicId",
         )
 
 
@@ -190,9 +172,9 @@ class SprintsStream(ZohoSprintsPropsStream):
     """Sprints"""
 
     name = "sprint"
-    path = "/team/{team_id}/projects/{project_id}/sprints/?action=data&type=[1,2,3,4]"
+    path = "/team/{myTeamId}/projects/{projectId}/sprints/?action=data&type=[1,2,3,4]"
     parent_stream_type = ProjectsStream
-    primary_keys = ["sprint_id"]
+    primary_keys = ["sprintId"]
     replication_key = None
     schema_filepath = SCHEMAS_DIR / "sprint.json"
 
@@ -204,15 +186,15 @@ class SprintsStream(ZohoSprintsPropsStream):
             prop_key="sprint_prop",
             ids_key="sprintIds",
             jobj_key="sprintJObj",
-            primary_key_name="sprint_id",
+            primary_key_name="sprintId",
         )
 
     def get_child_context(self, record: dict, context: Optional[dict]) -> dict:
         """Return a context dictionary for child streams."""
         return {
-            "team_id": context["team_id"],
-            "project_id": context["project_id"],
-            "sprint_id": record["sprint_id"],
+            "myTeamId": context["myTeamId"],
+            "projectId": context["projectId"],
+            "sprintId": record["sprintId"],
         }
 
 
@@ -220,7 +202,7 @@ class BacklogsStream(ZohoSprintsStream):
     """Backlogs"""
 
     name = "backlog"
-    path = "/team/{team_id}/projects/{project_id}/?action=getbacklog"
+    path = "/team/{myTeamId}/projects/{projectId}/?action=getbacklog"
     parent_stream_type = ProjectsStream
     primary_keys = ["backlogId"]
     replication_key = None
@@ -229,9 +211,9 @@ class BacklogsStream(ZohoSprintsStream):
     def get_child_context(self, record: dict, context: Optional[dict]) -> dict:
         """Return a context dictionary for child streams."""
         return {
-            "team_id": context["team_id"],
-            "project_id": context["project_id"],
-            "backlog_id": record["backlogId"],
+            "myTeamId": context["myTeamId"],
+            "projectId": context["projectId"],
+            "backlogId": record["backlogId"],
         }
 
 
@@ -239,9 +221,9 @@ class BacklogItemsStream(ZohoSprintsPropsStream):
     """Items"""
 
     name = "items_backlog"
-    path = "/team/{team_id}/projects/{project_id}/sprints/{backlog_id}/item/?action=sprintitems&subitem=true"
+    path = "/team/{myTeamId}/projects/{projectId}/sprints/{backlogId}/item/?action=sprintitems&subitem=true"
     parent_stream_type = BacklogsStream
-    primary_keys = ["item_id"]
+    primary_keys = ["itemId"]
     replication_key = None
     schema_filepath = SCHEMAS_DIR / "item.json"
 
@@ -253,16 +235,16 @@ class BacklogItemsStream(ZohoSprintsPropsStream):
             prop_key="item_prop",
             ids_key="itemIds",
             jobj_key="itemJObj",
-            primary_key_name="item_id",
+            primary_key_name="itemId",
         )
 
     def get_child_context(self, record: dict, context: Optional[dict]) -> dict:
         """Return a context dictionary for child streams."""
         return {
-            "team_id": context["team_id"],
-            "project_id": context["project_id"],
-            "backlog_id": context["backlog_id"],
-            "item_id": record["item_id"],
+            "myTeamId": context["myTeamId"],
+            "projectId": context["projectId"],
+            "backlogId": context["backlogId"],
+            "itemId": record["itemId"],
         }
 
 
@@ -271,9 +253,9 @@ class BacklogItemDetailsStream(ZohoSprintsPropsStream):
 
     # TODO change this name
     name = "item_details_backlog"
-    path = "/team/{team_id}/projects/{project_id}/sprints/{backlog_id}/item/{item_id}/?action=details"
+    path = "/team/{myTeamId}/projects/{projectId}/sprints/{backlogId}/item/{itemId}/?action=details"
     parent_stream_type = BacklogItemsStream
-    primary_keys = ["item_id"]
+    primary_keys = ["itemId"]
     replication_key = None
     schema_filepath = SCHEMAS_DIR / "item.json"
 
@@ -298,7 +280,7 @@ class BacklogItemDetailsStream(ZohoSprintsPropsStream):
             prop_key="item_prop",
             ids_key="itemIds",
             jobj_key="itemJObj",
-            primary_key_name="item_id",
+            primary_key_name="itemId",
         )
 
 
@@ -309,9 +291,9 @@ class SprintItemsStream(ZohoSprintsPropsStream):
     """Items"""
 
     name = "items_sprint"
-    path = "/team/{team_id}/projects/{project_id}/sprints/{sprint_id}/item/?action=sprintitems&subitem=true"
+    path = "/team/{myTeamId}/projects/{projectId}/sprints/{sprintId}/item/?action=sprintitems&subitem=true"
     parent_stream_type = SprintsStream
-    primary_keys = ["item_id"]
+    primary_keys = ["itemId"]
     replication_key = None
     schema_filepath = SCHEMAS_DIR / "item.json"
 
@@ -323,16 +305,16 @@ class SprintItemsStream(ZohoSprintsPropsStream):
             prop_key="item_prop",
             ids_key="itemIds",
             jobj_key="itemJObj",
-            primary_key_name="item_id",
+            primary_key_name="itemId",
         )
 
     def get_child_context(self, record: dict, context: Optional[dict]) -> dict:
         """Return a context dictionary for child streams."""
         return {
-            "team_id": context["team_id"],
-            "project_id": context["project_id"],
-            "sprint_id": context["sprint_id"],
-            "item_id": record["item_id"],
+            "myTeamId": context["myTeamId"],
+            "projectId": context["projectId"],
+            "sprintId": context["sprintId"],
+            "itemId": record["itemId"],
         }
 
 
@@ -340,10 +322,10 @@ class SprintItemDetailsStream(ZohoSprintsPropsStream):
     """Items"""
 
     # TODO change this name
-    name = "items_sprint"
-    path = "/team/{team_id}/projects/{project_id}/sprints/{sprint_id}/item/{item_id}/?action=details"
+    name = "item_details_sprint"
+    path = "/team/{myTeamId}/projects/{projectId}/sprints/{sprintId}/item/{itemId}/?action=details"
     parent_stream_type = SprintItemsStream
-    primary_keys = ["item_id"]
+    primary_keys = ["itemId"]
     replication_key = None
     schema_filepath = SCHEMAS_DIR / "item.json"
 
@@ -368,7 +350,7 @@ class SprintItemDetailsStream(ZohoSprintsPropsStream):
             prop_key="item_prop",
             ids_key="itemIds",
             jobj_key="itemJObj",
-            primary_key_name="item_id",
+            primary_key_name="itemId",
         )
 
 
@@ -376,9 +358,9 @@ class SprintUsers(ZohoSprintsPropsStream):
     """Sprint User Stream"""
 
     name = "sprint_user"
-    path = "/team/{team_id}/projects/{project_id}/sprints/{sprint_id}/users/"
+    path = "/team/{myTeamId}/projects/{projectId}/sprints/{sprintId}/users/"
     parent_stream_type = SprintsStream
-    primary_keys = ["user_id"]
+    primary_keys = ["userId"]
     replication_key = None
     schema_filepath = SCHEMAS_DIR / "sprint_user.json"
 
@@ -390,7 +372,7 @@ class SprintUsers(ZohoSprintsPropsStream):
             prop_key="user_prop",
             ids_key="userIds",
             jobj_key="userJObj",
-            primary_key_name="user_id",
+            primary_key_name="userId",
         )
 
     def get_url_params(
@@ -404,7 +386,7 @@ class ProjectUsers(ZohoSprintsPropsStream):
     """Project User Stream"""
 
     name = "project_user"
-    path = "/team/{team_id}/projects/{project_id}/users/?action=data"
+    path = "/team/{myTeamId}/projects/{projectId}/users/?action=data"
     parent_stream_type = ProjectsStream
     primary_keys = ["userId"]
     replication_key = None

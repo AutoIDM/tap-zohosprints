@@ -4,22 +4,16 @@
         "next": {
             "type": "boolean"
         },
-        "userIds": {
-            "type": "array",
-            "items": {
-                "type": "string"
-            }
-        },
-        "user_id": {
+        "userId": {
             "type": "string"
         },
-        "team_id": {
+        "myTeamId": {
             "type": "string"
         },
-        "project_id": {
+        "projectId": {
             "type": "string"
         },
-        "sprint_id": {
+        "sprintId": {
             "type": "string"
         },
         "status": {

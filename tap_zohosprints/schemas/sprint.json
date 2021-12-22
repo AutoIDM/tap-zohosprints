@@ -1,17 +1,17 @@
 {
     "type": "object",
     "properties": {
-        "sprint_id":{
+        "myTeamId":{
+                "type": "string"
+        },
+        "projectId":{
+                "type": "string"
+        },
+        "sprintId":{
                 "type": "string"
         },
         "next": {
             "type": "boolean"
-        },
-        "sprintIds": {
-            "type": "array",
-            "items": {
-                "type": "string"
-            }
         },
         "userDisplayName": {
             "type": "object",

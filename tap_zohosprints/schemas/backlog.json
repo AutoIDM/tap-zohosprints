@@ -1,6 +1,12 @@
 {
     "type": "object",
     "properties":{
+        "myTeamId": {
+         "type": "string"
+        },
+        "projectId": {
+         "type": "string"
+        },
         "backlogId": {
          "type": "string"
         },

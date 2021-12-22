@@ -15,7 +15,13 @@
         "status": {
             "type": "string"
         },
-        "epic_id": {
+        "projectId": {
+            "type": "string"
+        },
+        "myTeamId": {
+            "type": "string"
+        },
+        "epicId": {
             "type": "string"
         },
         "record":{
