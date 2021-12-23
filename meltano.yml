@@ -24,9 +24,10 @@ plugins:
     - name: start_date
       value: '2010-01-01T00:00:00Z'
     config:
-      start_date: '2010-01-01T00:00:00Z'
-      api_url: https://sprintsapi.zoho.com/zsapi
-      oauth_url: https://accounts.zoho.com/oauth/v2/token
+      api_url: https://sprintsapi.zoho.com.au/zsapi
+      oauth_url: https://accounts.zoho.com.au/oauth/v2/token
+      #api_url: https://sprintsapi.zoho.com/zsapi
+      #oauth_url: https://accounts.zoho.com/oauth/v2/token
     select:
     - '!log_hour.*'
     - '!project_user.*'
