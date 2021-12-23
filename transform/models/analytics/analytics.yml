@@ -1,0 +1,14 @@
+version: 2
+
+models:
+  - name: items
+    columns:
+      - name: item_id
+        tests:
+          - unique
+          - not_null
+      - name: project_id
+        tests:
+          - relationships:
+              to: ref('stg_project')
+              field: 'project_id'

@@ -220,7 +220,7 @@ class BacklogsStream(ZohoSprintsStream):
 class BacklogItemsStream(ZohoSprintsPropsStream):
     """Items"""
 
-    name = "items_backlog"
+    name = "item_backlog"
     path = "/team/{myTeamId}/projects/{projectId}/sprints/{backlogId}/item/?action=sprintitems&subitem=true"
     parent_stream_type = BacklogsStream
     primary_keys = ["itemId"]
@@ -290,7 +290,7 @@ class BacklogItemDetailsStream(ZohoSprintsPropsStream):
 class SprintItemsStream(ZohoSprintsPropsStream):
     """Items"""
 
-    name = "items_sprint"
+    name = "item_sprint"
     path = "/team/{myTeamId}/projects/{projectId}/sprints/{sprintId}/item/?action=sprintitems&subitem=true"
     parent_stream_type = SprintsStream
     primary_keys = ["itemId"]
