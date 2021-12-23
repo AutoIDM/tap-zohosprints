@@ -26,7 +26,7 @@ class TeamsStream(ZohoSprintsStream):
 
     def get_child_context(self, record: dict, context: Optional[dict]) -> dict:
         """Return a context dictionary for child streams."""
-        #Need to use this instead of myTeamId as sometimes myTeamId doesn't have an accurate value
+        # Need to use this instead of myTeamId as sometimes myTeamId doesn't have an accurate value
         return {"myTeamId": record["portals"][0]["zsoid"]}
         # Will not work if someone has more than one portal. In that case we'll need to create multiple team records, one for each portal, or create a child stream for each portal
 

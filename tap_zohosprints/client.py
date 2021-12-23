@@ -147,13 +147,14 @@ class ZohoSprintsStream(RESTStream):
         )
         if data.get("code") == 7602.1:
             raise FatalAPIError(f"Error, locked out of the API. {msg}")
-        
+
         if 400 <= response.status_code < 500:
             raise FatalAPIError(msg)
 
         elif 500 <= response.status_code < 600:
             raise RetriableAPIError(msg)
         super().validate_response(response)
+
 
 class ZohoSprintsPropsStream(ZohoSprintsStream):
     next_page_token_jsonpath = "$.nextIndex"
