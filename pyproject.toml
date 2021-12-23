@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "tap-zohosprints"
-version = "0.0.2"
+version = "0.0.3"
 description = "`tap-zohosprints` is a Singer tap for ZohoSprints, built with the Meltano SDK for Singer Taps."
 authors = ["AutoIDM"]
 license = "Apache 2.0"
