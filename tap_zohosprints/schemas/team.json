@@ -1,0 +1,46 @@
+{
+    "type": "object",
+    "properties": {
+        "ownerTeamIds": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        "defaultPortalId": {
+            "type": "string"
+        },
+        "myTeamId": {
+            "type": "string"
+        },
+        "portals": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "teamName": {
+                        "type": "string"
+                    },
+                    "isShowTeam": {
+                        "type": "boolean"
+                    },
+                    "orgName": {
+                        "type": "string"
+                    },
+                    "portalOwner": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "integer"
+                    },
+                    "zsoid": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "status": {
+            "type": "string"
+        }
+    }
+}

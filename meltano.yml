@@ -24,11 +24,14 @@ plugins:
     - name: start_date
       value: '2010-01-01T00:00:00Z'
     config:
-      start_date: '2010-01-01T00:00:00Z'
-      #api_url: https://sprintsapi.zoho.com.au/zsapi
-      api_url: https://sprintsapi.zoho.com/zsapi
-      oauth_url: https://accounts.zoho.com/oauth/v2/token
-      #oauth_url: https://accounts.zoho.com.au/oauth/v2/token
+      api_url: https://sprintsapi.zoho.com.au/zsapi
+      oauth_url: https://accounts.zoho.com.au/oauth/v2/token
+      #api_url: https://sprintsapi.zoho.com/zsapi
+      #oauth_url: https://accounts.zoho.com/oauth/v2/token
+    select:
+    - '!log_hour.*'
+    - '!project_user.*'
+    - '*.*'
   loaders:
   - name: target-jsonl
     variant: andyh1203
@@ -37,8 +40,17 @@ plugins:
     variant: transferwise
     pip_url: pipelinewise-target-postgres
     config:
-      host: 192.168.0.170
-      user: postgres
-      dbname: postgres
+      #Pointing to these via .env so dbt can have access
+      #host: 192.168.0.170
+      #user: postgres
+      #dbname: postgres
       primary_key_required: false
-      data_flattening_max_level: 10 
+  transformers:
+  - name: dbt
+    pip_url: dbt==0.21.1
+    config:
+      target: postgres
+      target_schema: dbt
+  files:
+  - name: dbt
+    pip_url: git+https://gitlab.com/meltano/files-dbt.git@config-version-2

@@ -4,12 +4,6 @@
         "next": {
             "type": "boolean"
         },
-        "userIds": {
-            "type": "array",
-            "items": {
-                "type": "string"
-            }
-        },
         "projStatus": {
             "type": "integer"
         },
@@ -17,6 +11,12 @@
             "type": "string"
         },
         "userId": {
+            "type": "string"
+        },
+        "myTeamId": {
+            "type": "string"
+        },
+        "projectId": {
             "type": "string"
         },
         "record": {

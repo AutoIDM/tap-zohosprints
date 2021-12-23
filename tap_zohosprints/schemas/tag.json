@@ -1,6 +1,9 @@
 {
     "type": "object",
     "properties": {
+        "myTeamId": {
+            "type": "string"
+        },
         "tagId": {
             "type": "string"
         },
@@ -15,46 +18,6 @@
         },
         "userDisplayName": {
             "type": "object"
-        },
-        "zsTagJObj": {
-            "type": "object",
-            "properties": {
-                "114398000000007021": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "114398000000016001": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                }
-            }
-        },
-        "zsTag_prop": {
-            "type": "object",
-            "properties": {
-                "tagId": {
-                    "type": "integer"
-                },
-                "createdBy": {
-                    "type": "integer"
-                },
-                "colorCode": {
-                    "type": "integer"
-                },
-                "tagName": {
-                    "type": "integer"
-                }
-            }
-        },
-        "zsTagIds": {
-            "type": "array",
-            "items": {
-                "type": "string"
-            }
         },
         "zsuserIdvsZUID": {
             "type": "object"

@@ -1,0 +1,62 @@
+version: 2
+
+models:
+  - name: stg_backlog
+    columns:
+      - name: backlog_id
+        tests:
+          - unique
+          - not_null
+      - name: project_id
+        tests:
+          - relationships:
+              to: ref('stg_project')
+              field: 'project_id'
+  - name: stg_epic
+    columns:
+      - name: epic_id
+        tests:
+          - unique
+          - not_null
+  - name: stg_item_details_backlog
+    columns:
+      - name: item_id
+        tests:
+          - unique
+          - not_null
+  - name:  stg_item_details_sprint
+    columns:
+      - name: item_id
+        tests:
+          - unique
+          - not_null
+  - name: stg_project
+    columns:
+      - name: project_id
+        tests:
+          - unique
+          - not_null
+  - name: stg_sprint
+    columns:
+      - name: sprint_id
+        tests:
+          - unique
+          - not_null
+  - name: stg_sprint_user
+    columns:
+      - name: user_id
+        tests:
+          - unique
+          - not_null
+  - name: stg_tag
+    columns:
+      - name: tag_id
+        tests:
+          - unique
+          - not_null
+  - name: stg_team
+    columns:
+      - name: team_id
+        tests:
+          - unique
+          - not_null

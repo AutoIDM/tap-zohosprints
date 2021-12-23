@@ -1,6 +1,9 @@
 {
     "type": "object",
     "properties": {
+        "myTeamId": {
+            "type": "string"
+        },
         "prefix": {
             "type": "string"
         },
@@ -8,14 +11,8 @@
             "type": "object",
             "properties": {}
         },
-        "project_id": {
+        "projectId": {
                 "type":"string"
-        },
-        "projectIds": {
-            "type": "array",
-            "items": {
-                "type": "string"
-            }
         },
         "zsuserIdvsZUID": {
             "type": "object",
